@@ -35,3 +35,18 @@ code.
      the extraction LLM to mistranslate "designation" as "back pain" —
      garbled script confusing the LLM layer. Early signal for R1: Urdu
      needs language pinning or model upgrade, not just prompt fixes.
+
+## Day 6-7 — Streamlit App, v0.1
+
+Wired transcribe() -> extract() -> generate() into a Streamlit app.
+Record (st.audio_input, re-recordable via session_state key rotation)
+or upload tabs -> transcript display -> extracted JSON display ->
+download button, shown only when form.is_complete(). Missing-field
+case shows a plain-text warning; interactive clarification loop is
+Week 2 scope.
+
+**Result**: [fill in — did the full pipeline produce a correct .docx
+end to end? any issues with the recorder, transcription, or generated
+document formatting?]
+
+**Status**: v0.1 tagged — first true end-to-end demo working.
