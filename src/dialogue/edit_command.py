@@ -1,9 +1,9 @@
 import json
 import os
 from datetime import date
-import dateparser
 
 from src.extraction.llm_backend import chat_json
+from src.utils.date_utils import parse_date
 
 DEFAULT_MODEL = os.getenv("GROQ_LLM_MODEL")
 
@@ -35,6 +35,10 @@ User: change the date to next Monday
 Response:
 {{"start_date":"next Monday"}}
 
+User: change the date to 26 August 2026
+Response:
+{{"start_date":"26 August 2026"}}
+
 User: change the duration to 5 days
 Response:
 {{"duration_days":5}}
@@ -43,39 +47,9 @@ If nothing should change, return:
 {{}}
 """
 
-
 DATE_FIELDS = {"start_date"}
+INT_FIELDS = {"duration_days"}
 
-
-
-def parse_date(text: str) -> str | None:
-    if not text:
-        return None
-
-    settings = {
-        "PREFER_DATES_FROM": "future",
-        "DATE_ORDER": "DMY",
-    }
-
-    parsed = dateparser.parse(text, settings=settings)
-
-    if parsed:
-        return parsed.date().isoformat()
-
-    # Try common formats manually
-    for fmt in (
-        "%d %B %Y",
-        "%d %b %Y",
-        "%d-%m-%Y",
-        "%d/%m/%Y",
-        "%Y-%m-%d",
-    ):
-        try:
-            return datetime.strptime(text, fmt).date().isoformat()
-        except ValueError:
-            pass
-
-    return None
 
 def apply_edit_command(
     form,
@@ -88,7 +62,8 @@ def apply_edit_command(
     current_fields = {
         key: value
         for key, value in form.model_dump().items()
-        if key not in ("document_type", "missing_fields") and value is not None
+        if key not in ("document_type", "missing_fields")
+        and value is not None
     }
 
     prompt = EDIT_PROMPT.format(
@@ -116,10 +91,11 @@ def apply_edit_command(
             if parsed:
                 value = parsed
 
-        if field == "duration_days":
+        # Convert integers
+        if field in INT_FIELDS:
             try:
                 value = int(value)
-            except Exception:
+            except (ValueError, TypeError):
                 pass
 
         if hasattr(form, field):
@@ -127,6 +103,5 @@ def apply_edit_command(
             changed_fields.append(field)
 
     form.compute_missing()
-    print(form.model_dump())
 
     return form, changed_fields

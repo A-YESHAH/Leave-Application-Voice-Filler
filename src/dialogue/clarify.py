@@ -1,7 +1,6 @@
 from typing import Any
-import dateparser
-from datetime import datetime
 
+from src.utils.date_utils import parse_date
 
 QUESTIONS: dict[str, dict[str, str]] = {
     "leave_application_office": {
@@ -15,6 +14,7 @@ QUESTIONS: dict[str, dict[str, str]] = {
         "duration_days": "How many days of leave do you need?",
         "reason": "What is the reason for your leave?",
     },
+
     "leave_application_university": {
         "student_name": "What is your full name?",
         "roll_number": "What is your roll number?",
@@ -28,6 +28,7 @@ QUESTIONS: dict[str, dict[str, str]] = {
         "semester": "What semester are you currently in?",
         "department": "What department is this program under?",
     },
+
     "complaint_letter": {
         "complainant_name": "What is your full name?",
         "address": "What is your address / area?",
@@ -57,50 +58,18 @@ DATE_FIELDS = {"start_date"}
 
 def get_next_question(form) -> tuple[str, str] | None:
     form.compute_missing()
-    print(form.model_dump())
 
     if not form.missing_fields:
         return None
 
-    doc_type = form.document_type
     field = form.missing_fields[0]
 
-    question = QUESTIONS.get(doc_type, {}).get(
+    question = QUESTIONS.get(form.document_type, {}).get(
         field,
         f"Please provide: {field.replace('_', ' ')}",
     )
 
     return field, question
-
-
-def parse_date(text: str) -> str | None:
-    if not text:
-        return None
-
-    settings = {
-        "PREFER_DATES_FROM": "future",
-        "DATE_ORDER": "DMY",
-    }
-
-    parsed = dateparser.parse(text, settings=settings)
-
-    if parsed:
-        return parsed.date().isoformat()
-
-    # Try common formats manually
-    for fmt in (
-        "%d %B %Y",
-        "%d %b %Y",
-        "%d-%m-%Y",
-        "%d/%m/%Y",
-        "%Y-%m-%d",
-    ):
-        try:
-            return datetime.strptime(text, fmt).date().isoformat()
-        except ValueError:
-            pass
-
-    return None
 
 
 def apply_answer(form, field: str, raw_answer: str):
@@ -130,8 +99,7 @@ def apply_answer(form, field: str, raw_answer: str):
 
 
 def needs_confirmation(form, already_confirmed: set[str]) -> tuple[str, str] | None:
-    doc_type = form.document_type
-    fields_to_confirm = CONFIRMATION_FIELDS.get(doc_type, [])
+    fields_to_confirm = CONFIRMATION_FIELDS.get(form.document_type, [])
 
     for field in fields_to_confirm:
         value = getattr(form, field, None)
@@ -145,8 +113,13 @@ def needs_confirmation(form, already_confirmed: set[str]) -> tuple[str, str] | N
     return None
 
 
-def apply_confirmation(form, field: str, user_response: str, already_confirmed: set[str]):
-    response_lower = user_response.strip().lower()
+def apply_confirmation(
+    form,
+    field: str,
+    user_response: str,
+    already_confirmed: set[str],
+):
+    response = user_response.strip().lower()
 
     affirmative = {
         "yes",
@@ -158,12 +131,14 @@ def apply_confirmation(form, field: str, user_response: str, already_confirmed: 
         "ٹھیک",
     }
 
-    if response_lower not in affirmative:
+    if response not in affirmative:
+
         if field == "leave_type":
             for candidate in ("casual", "sick", "annual"):
-                if candidate in response_lower:
+                if candidate in response:
                     setattr(form, field, candidate)
                     break
 
     already_confirmed.add(field)
+
     return form

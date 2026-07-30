@@ -1,196 +1,375 @@
-"""generate(form) -> .docx file. Dispatches to the right template by document_type."""
+"""
+generate.py
+
+Generates DOCX documents from extracted form data.
+
+Supported document types:
+- Office Leave Application
+- University Leave Application
+- Complaint Letter
+"""
+
 from pathlib import Path
-from datetime import date, datetime
+from datetime import date
 from docx import Document
 from docx.shared import Pt
-import dateparser
 
+# Import schemas
 from src.extraction.schemas import (
     LeaveApplicationOfficeForm,
     LeaveApplicationUniversityForm,
     ComplaintLetterForm,
 )
+from src.utils.date_utils import format_date
 
 
-def _format_display_date(value: str) -> str:
-    if not value:
-        return ""
 
-    # Already ISO
-    try:
-        d = date.fromisoformat(value)
-        return d.strftime("%d %B %Y")
-    except ValueError:
-        pass
+def _add_line(
+    doc: Document,
+    text,
+    bold: bool = False,
+    size: int = 11,
+):
+    """
+    Adds a single paragraph to the document.
 
-    # Parse natural language
-    parsed = dateparser.parse(
-        value,
-        settings={
-            "PREFER_DATES_FROM": "future",
-            "DATE_ORDER": "DMY",
-        },
-    )
+    If text is None or empty, nothing is added.
+    """
 
-    if parsed:
-        return parsed.strftime("%d %B %Y")
-
-    # Try manual formats
-    for fmt in (
-        "%d %B %Y",
-        "%d %b %Y",
-        "%d-%m-%Y",
-        "%d/%m/%Y",
-    ):
-        try:
-            return datetime.strptime(value, fmt).strftime("%d %B %Y")
-        except ValueError:
-            pass
-
-    raise ValueError(f"Invalid date: {value}")
-
-
-def _add_line(doc: Document, text, bold: bool = False, size: int = 11):
-    """Add a paragraph line, skip entirely if text is falsy (optional-field omission)."""
     if not text:
         return
-    p = doc.add_paragraph()
-    run = p.add_run(str(text))
+
+    paragraph = doc.add_paragraph()
+    run = paragraph.add_run(str(text))
     run.bold = bold
     run.font.size = Pt(size)
 
 
-def write_body_paragraph_office(form: LeaveApplicationOfficeForm) -> str:
-    start_display = _format_display_date(form.start_date)
+def write_body_paragraph_office(
+    form: LeaveApplicationOfficeForm,
+) -> str:
+    """
+    Generates the body paragraph for an office leave application.
+    """
+
+    start_display = format_date(form.start_date)
+
     return (
-        f"I am writing to respectfully request {form.duration_days} day(s) of "
-        f"{form.leave_type} leave starting {start_display}, on account of {form.reason}. "
-        f"I will ensure all pending tasks are handed over before my leave begins."
+        f"I am writing to respectfully request "
+        f"{form.duration_days} day(s) of "
+        f"{form.leave_type} leave starting "
+        f"{start_display}, on account of "
+        f"{form.reason}. "
+        f"I will ensure that all pending tasks are "
+        f"properly handed over before my leave begins."
     )
 
 
-def _generate_office(form: LeaveApplicationOfficeForm, output_path: Path) -> Path:
+def _generate_office(
+    form: LeaveApplicationOfficeForm,
+    output_path: Path,
+) -> Path:
+    """
+    Generate an Office Leave Application DOCX.
+    """
+
     doc = Document()
-    today_display = _format_display_date(date.today().isoformat())
-    duration_display = f"{form.duration_days} day{'s' if form.duration_days != 1 else ''}"
+
+    today_display = format_date(date.today().isoformat())
+
+    duration_display = (
+        f"{form.duration_days} day"
+        f"{'s' if form.duration_days != 1 else ''}"
+    )
+
 
     _add_line(doc, form.applicant_name, bold=True)
-    dept_line = f"{form.applicant_designation}, {form.department}" if form.department else form.applicant_designation
-    _add_line(doc, dept_line)
+
+    department_line = (
+        f"{form.applicant_designation}, {form.department}"
+        if form.department
+        else form.applicant_designation
+    )
+
+    _add_line(doc, department_line)
+
     if form.employee_id:
         _add_line(doc, f"Employee ID: {form.employee_id}")
+
+    if form.contact_number:
+        _add_line(doc, f"Contact: {form.contact_number}")
+
     _add_line(doc, f"Date: {today_display}")
 
+
     doc.add_paragraph()
+
     _add_line(doc, f"To: {form.recipient_name}")
     _add_line(doc, form.recipient_designation)
     _add_line(doc, form.company_name)
 
-    doc.add_paragraph()
-    leave_type_label = form.leave_type.capitalize() if form.leave_type else ""
-    _add_line(doc, f"Subject: Application for {leave_type_label} Leave ({duration_display})", bold=True)
 
     doc.add_paragraph()
-    _add_line(doc, "Respected Sir/Madam,")
-    doc.add_paragraph()
-    _add_line(doc, write_body_paragraph_office(form))
-    doc.add_paragraph()
-    _add_line(doc, "I shall be grateful for your kind approval. I will ensure all pending "
-                   "tasks are handed over before my leave begins.")
 
-    doc.add_paragraph()
-    _add_line(doc, "Yours sincerely,")
-    _add_line(doc, form.applicant_name)
-    _add_line(doc, form.applicant_designation)
-    if form.contact_number:
-        _add_line(doc, f"Contact: {form.contact_number}")
+    leave_label = (
+        form.leave_type.capitalize()
+        if form.leave_type
+        else "Leave"
+    )
 
-    doc.save(output_path)
-    return output_path
-
-
-def write_body_paragraph_university(form: LeaveApplicationUniversityForm) -> str:
-    start_display = _format_display_date(form.start_date)
-    return (
-        f"I respectfully submit that due to {form.reason}, I am unable to attend classes "
-        f"starting {start_display}. I therefore request leave for {form.duration_days} day(s)."
+    _add_line(
+        doc,
+        f"Subject: Application for {leave_label} Leave ({duration_display})",
+        bold=True,
     )
 
 
-def _generate_university(form: LeaveApplicationUniversityForm, output_path: Path) -> Path:
+    doc.add_paragraph()
+
+    _add_line(doc, "Respected Sir/Madam,")
+
+
+    doc.add_paragraph()
+
+    _add_line(
+        doc,
+        write_body_paragraph_office(form),
+    )
+
+    doc.add_paragraph()
+
+    _add_line(
+        doc,
+        "I shall be grateful for your kind approval. "
+        "Thank you for your consideration."
+    )
+    doc.add_paragraph()
+
+    _add_line(doc, "Yours sincerely,")
+
+    _add_line(doc, form.applicant_name)
+
+    _add_line(doc, form.applicant_designation)
+
+    # Save file
+
+    doc.save(output_path)
+
+    return output_path
+
+def write_body_paragraph_university(
+    form: LeaveApplicationUniversityForm,
+) -> str:
+    """
+    Generates the body paragraph for a university leave application.
+    """
+
+    start_display = format_date(form.start_date)
+
+    return (
+        f"I respectfully submit that due to {form.reason}, "
+        f"I am unable to attend my classes starting "
+        f"{start_display}. Therefore, I kindly request "
+        f"leave for {form.duration_days} day(s)."
+    )
+
+
+def _generate_university(
+    form: LeaveApplicationUniversityForm,
+    output_path: Path,
+) -> Path:
+    """
+    Generate a University Leave Application DOCX.
+    """
+
     doc = Document()
-    today_display = _format_display_date(date.today().isoformat())
-    duration_display = f"{form.duration_days} day{'s' if form.duration_days != 1 else ''}"
+
+    today_display = format_date(date.today().isoformat())
+
+    duration_display = (
+        f"{form.duration_days} day"
+        f"{'s' if form.duration_days != 1 else ''}"
+    )
+
 
     _add_line(doc, f"Date: {today_display}")
+
+
     doc.add_paragraph()
+
     _add_line(doc, f"To: {form.recipient_designation}")
-    dept_line = f"Department of {form.department}" if form.department else None
-    _add_line(doc, dept_line)
+
+    if form.department:
+        _add_line(
+            doc,
+            f"Department of {form.department}",
+        )
+
     _add_line(doc, form.institution_name)
 
     doc.add_paragraph()
-    _add_line(doc, f"Subject: Application for Leave — {duration_display}", bold=True)
 
-    doc.add_paragraph()
-    _add_line(doc, f"Respected {form.recipient_salutation},")
-    doc.add_paragraph()
-    _add_line(doc, write_body_paragraph_university(form))
-    doc.add_paragraph()
-    _add_line(doc, "Kindly grant me leave for the mentioned period. I shall cover the "
-                   "missed coursework at the earliest.")
-
-    doc.add_paragraph()
-    _add_line(doc, "Yours obediently,")
-    _add_line(doc, form.student_name)
-    program_line = f"{form.program}, Semester {form.semester}" if form.semester else form.program
-    _add_line(doc, program_line)
-    _add_line(doc, f"Roll No: {form.roll_number}")
-
-    doc.save(output_path)
-    return output_path
-
-def write_body_paragraph_complaint(form: ComplaintLetterForm) -> str:
-    return (
-        f"I wish to bring to your attention that {form.issue_description}. "
-        f"This is causing significant difficulty and I request that the matter be "
-        f"looked into and resolved at the earliest."
+    _add_line(
+        doc,
+        f"Subject: Application for Leave ({duration_display})",
+        bold=True,
     )
 
 
-def _generate_complaint(form: ComplaintLetterForm, output_path: Path) -> Path:
+    doc.add_paragraph()
+
+    salutation = form.recipient_salutation or "Sir/Madam"
+
+    _add_line(
+        doc,
+        f"Respected {salutation},",
+    )
+
+    doc.add_paragraph()
+
+    _add_line(
+        doc,
+        write_body_paragraph_university(form),
+    )
+
+    doc.add_paragraph()
+
+    _add_line(
+        doc,
+        "Kindly grant me leave for the above-mentioned period. "
+        "I assure you that I will cover all missed lectures, "
+        "assignments, and coursework after returning."
+    )
+    doc.add_paragraph()
+
+    _add_line(doc, "Yours obediently,")
+
+    _add_line(doc, form.student_name)
+
+    # Program + Semester
+
+    if form.semester:
+        _add_line(
+            doc,
+            f"{form.program}, Semester {form.semester}",
+        )
+    else:
+        _add_line(
+            doc,
+            form.program,
+        )
+
+    _add_line(
+        doc,
+        f"Roll No: {form.roll_number}",
+    )
+
+    if form.institution_name:
+        _add_line(
+            doc,
+            form.institution_name,
+        )
+    doc.save(output_path)
+
+    return output_path
+
+def write_body_paragraph_complaint(
+    form: ComplaintLetterForm,
+) -> str:
+    """
+    Generates the main body paragraph for a complaint letter.
+    """
+
+    return (
+        f"I wish to bring to your attention that "
+        f"{form.issue_description}. "
+        f"This issue has caused significant inconvenience, "
+        f"and I kindly request that appropriate action be taken "
+        f"to resolve the matter as soon as possible."
+    )
+
+
+def _generate_complaint(
+    form: ComplaintLetterForm,
+    output_path: Path,
+) -> Path:
+    """
+    Generate a Complaint Letter DOCX.
+    """
+
     doc = Document()
-    today_display = _format_display_date(date.today().isoformat())
+
+    today_display = format_date(date.today().isoformat())
 
     _add_line(doc, form.complainant_name, bold=True)
-    _add_line(doc, form.address)
-    if form.reference_number:
-        _add_line(doc, f"Consumer/Reference No: {form.reference_number}")
+
+    if form.address:
+        _add_line(doc, form.address)
+
     if form.contact_number:
         _add_line(doc, f"Contact: {form.contact_number}")
+
+    if form.reference_number:
+        _add_line(
+            doc,
+            f"Reference No: {form.reference_number}",
+        )
+
     _add_line(doc, f"Date: {today_display}")
 
+
     doc.add_paragraph()
-    _add_line(doc, f"To: The {form.recipient_designation}")
+
+    _add_line(
+        doc,
+        f"To: {form.recipient_designation}",
+    )
+
     _add_line(doc, form.organization_name)
-    _add_line(doc, form.organization_address)
+
+    if form.organization_address:
+        _add_line(doc, form.organization_address)
+
 
     doc.add_paragraph()
-    _add_line(doc, f"Subject: Complaint Regarding {form.complaint_subject}", bold=True)
+
+    _add_line(
+        doc,
+        f"Subject: Complaint Regarding {form.complaint_subject}",
+        bold=True,
+    )
+
 
     doc.add_paragraph()
+
     _add_line(doc, "Dear Sir/Madam,")
-    doc.add_paragraph()
-    _add_line(doc, write_body_paragraph_complaint(form))
-    doc.add_paragraph()
-    _add_line(doc, "I request you to kindly look into this matter urgently and resolve "
-                   "it at the earliest. I look forward to your prompt response.")
 
     doc.add_paragraph()
+
+    _add_line(
+        doc,
+        write_body_paragraph_complaint(form),
+    )
+
+    doc.add_paragraph()
+
+    _add_line(
+        doc,
+        "I would appreciate your prompt attention "
+        "to this matter and look forward to "
+        "a suitable resolution at the earliest."
+    )
+
+    doc.add_paragraph()
+
     _add_line(doc, "Yours faithfully,")
+
     _add_line(doc, form.complainant_name)
 
+    # Save document
+
     doc.save(output_path)
+
     return output_path
 
 
@@ -201,31 +380,64 @@ _GENERATORS = {
 }
 
 
-def generate(form, output_path: str | Path) -> Path:
+def generate(
+    form,
+    output_path: str | Path,
+) -> Path:
     """
-    Render a form into a .docx file. Dispatches by form.document_type.
-    Raises ValueError if required fields are missing or the type is unsupported.
+    Main entry point.
+
+    Parameters
+    ----------
+    form
+        Pydantic form object.
+
+    output_path
+        Where the DOCX should be saved.
+
+    Returns
+    -------
+    Path
+        Path to the generated document.
     """
+
     if not form.is_complete():
-        raise ValueError(f"Cannot generate — missing required fields: {form.missing_fields}")
+        raise ValueError(
+            f"Cannot generate document. "
+            f"Missing required fields: {form.missing_fields}"
+        )
 
-    generator_fn = _GENERATORS.get(form.document_type)
-    if generator_fn is None:
-        raise ValueError(f"No generator implemented for document_type: {form.document_type}")
+    generator = _GENERATORS.get(form.document_type)
 
-    return generator_fn(form, Path(output_path))
+    if generator is None:
+        raise ValueError(
+            f"No generator implemented for "
+            f"{form.document_type}"
+        )
+
+    return generator(
+        form,
+        Path(output_path),
+    )
 
 
 if __name__ == "__main__":
+
     test_form = LeaveApplicationOfficeForm(
         applicant_name="Ayesha Niazi",
         applicant_designation="Software Engineer",
         recipient_name="Ahmed Khan",
+        recipient_designation="HR Manager",
         company_name="TechSol Pvt Ltd",
         leave_type="casual",
-        start_date="2026-07-20",
+        start_date="2026-08-26",
         duration_days=3,
-        reason="sister's wedding",
+        reason="family event",
     )
-    out = generate(test_form, "test_output_office.docx")
-    print(f"Generated: {out}")
+
+    output = generate(
+        test_form,
+        "sample_leave_application.docx",
+    )
+
+    print(f"Generated: {output}")
