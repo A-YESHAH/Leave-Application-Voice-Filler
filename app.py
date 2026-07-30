@@ -11,11 +11,8 @@ from src.dialogue.clarify import get_next_question, apply_answer, needs_confirma
 from src.dialogue.edit_command import apply_edit_command
 from src.generation.generate import generate
 from src.generation.preview import render_preview
-from src.generation.pdf_export import docx_to_pdf
+from src.generation.pdf_export import generate_pdf
 
-st.write("LLM_BACKEND:", os.getenv("LLM_BACKEND"))
-st.write("STT_BACKEND:", os.getenv("STT_BACKEND"))
-st.write("GROQ_KEY:", bool(os.getenv("GROQ_API_KEY")))
 
 st.set_page_config(page_title="Voice-Based Form Filler", page_icon="🎙️")
 st.title("🎙️ Voice-Based Form Filler")
@@ -198,29 +195,40 @@ if st.session_state.form is not None:
                         st.rerun()
 
             st.subheader("6. Document")
-            if st.button("Generate document"):
-                out_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.docx"
-                try:
-                    generate(form, out_path)
-                    with open(out_path, "rb") as f:
-                        st.download_button(
-                            "Download .docx",
-                            data=f.read(),
-                            file_name="document.docx",
-                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        )
-                    try:
-                        pdf_path = docx_to_pdf(out_path)
-                        with open(pdf_path, "rb") as f:
-                            st.download_button(
-                                "Download .pdf",
-                                data=f.read(),
-                                file_name="document.pdf",
-                                mime="application/pdf",
-                            )
-                    except RuntimeError as pdf_err:
-                        st.warning(f"PDF export unavailable: {pdf_err}")
-                except ValueError as e:
-                    st.error(str(e))
+
+if st.button("Generate document"):
+    try:
+        # Temporary output paths
+        docx_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.docx"
+        pdf_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.pdf"
+
+        # Generate DOCX
+        generate(form, docx_path)
+
+        # Generate PDF
+        generate_pdf(form, pdf_path)
+
+        st.success("Document generated successfully!")
+
+        # Download DOCX
+        with open(docx_path, "rb") as f:
+            st.download_button(
+                label="📄 Download DOCX",
+                data=f.read(),
+                file_name="document.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
+
+        # Download PDF
+        with open(pdf_path, "rb") as f:
+            st.download_button(
+                label="📕 Download PDF",
+                data=f.read(),
+                file_name="document.pdf",
+                mime="application/pdf",
+            )
+
+    except Exception as e:
+        st.error(f"Document generation failed: {e}")
 elif not audio_path:
     st.info("Record or upload a voice note to get started.")
