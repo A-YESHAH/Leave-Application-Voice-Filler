@@ -12,6 +12,10 @@ from src.generation.generate import generate
 from src.generation.preview import render_preview
 from src.generation.pdf_export import docx_to_pdf
 
+st.write("LLM_BACKEND:", os.getenv("LLM_BACKEND"))
+st.write("STT_BACKEND:", os.getenv("STT_BACKEND"))
+st.write("GROQ_KEY:", bool(os.getenv("GROQ_API_KEY")))
+
 st.set_page_config(page_title="Voice-Based Form Filler", page_icon="🎙️")
 st.title("🎙️ Voice-Based Form Filler")
 st.caption("Speak naturally in English/Urdu — get a formal document.")
