@@ -1,5 +1,5 @@
 import json
-import ollama
+from src.extraction.llm_backend import chat_json
 
 CLASSIFY_MODEL = "llama3.2"
 
@@ -20,7 +20,7 @@ REQUEST_MARKERS = [
 
 UNIVERSITY_MARKERS = [
     "semester", "سمسٹر", "class", "کلاس", "roll number", "رول نمبر",
-    "student", "طالب علم", "بی ایس سی ایس", "بی ای سی ایس",
+    "student", "طالب علم", "bscs", "بی ایس سی ایس", "بی ای سی ایس",
     "university", "یونیورسٹی", "یونیویسٹی", "head of department",
     "ہیڈ اف ڈپارٹمنٹ", "professor", "پروفیسر",
 ]
@@ -54,18 +54,12 @@ Rules:
   request or complaint. There must be a clear intent to request leave, file a complaint, etc.
   If there is no such intent at all, return "no_intent".
 - MANDATORY CHECK before choosing any document type: does the transcript contain an explicit
-  VERB OF REQUEST — words/phrases like "chahiye"/"چاہیے" (want/need), "chutti"/"چھٹی" (leave)
-  combined with a request, "application likhni hai"/"ایپلیکیشن لکھنی ہے" (need to write an
-  application), "complaint likhni hai"/"کمپلینٹ لکھنی ہے" (need to file a complaint),
-  "I need", "I want", "please grant"? If NO such request verb or phrase is present anywhere
-  in the transcript, in ANY script, you MUST return "no_intent". Stating a name or a date is
-  NOT a request verb.
-- Mentions of "class"/"کلاس", "semester"/"سمسٹر", "roll number"/"رول نمبر", "student"/"طالب علم",
-  or a subject/professor context strongly indicate leave_application_university, NOT
-  leave_application_office — even if "chutti"/"چھٹی" or "leave" appears, check WHO the request
-  is addressed to (a teacher/school vs a workplace manager) before choosing office.
-- If a bare leave request exists but has NO workplace context (manager, company, employee ID,
-  designation) AND NO school context (class, semester, roll number, student), return "unknown".
+  VERB OF REQUEST? If NO such request verb or phrase is present anywhere in the transcript,
+  in ANY script, you MUST return "no_intent". Stating a name or a date is NOT a request verb.
+- Mentions of "class"/"کلاس", "semester"/"سمسٹر", "roll number"/"رول نمبر", "student"/"طالب علم"
+  strongly indicate leave_application_university, NOT leave_application_office.
+- If a bare leave request exists but has NO workplace context AND NO school context, return
+  "unknown".
 
 Worked examples (each shown in both Roman Urdu and Urdu script — apply the SAME logic to both):
 
@@ -74,42 +68,36 @@ Transcript: "Sir ko application likhni hai, kal main class attend nahi kar sakta
 
 Transcript: "سر کو اپلیکیشن لکھنی ہے، کل میں کلاس اٹینڈ نہیں کر سکتا، بخار ہے۔ میں بی ایس سی ایس سیونتھ سمسٹر کا طالب علم ہوں، رول نمبر 21-CS-045۔"
 -> {{"document_type": "leave_application_university"}}
-(Same content as above, in Urdu script — student/class/semester/roll number -> university.)
 
 Transcript: "Mujhe Monday se teen din ki chutti chahiye, meri sister ki shaadi hai. Manager ka naam Ahmed Khan hai."
 -> {{"document_type": "leave_application_office"}}
 
 Transcript: "مجھے پیر سے تین دن کی چھٹی چاہیے، میری بہن کی شادی ہے۔ منیجر کا نام احمد خان ہے۔"
 -> {{"document_type": "leave_application_office"}}
-(Same content as above, in Urdu script — manager/workplace context -> office.)
 
 Transcript: "K-Electric ko complaint likhni hai, hamare area mein loadshedding ho rahi hai."
 -> {{"document_type": "complaint_letter"}}
 
 Transcript: "کے الیکٹرک کو کمپلینٹ لکھنی ہے، ہمارے علاقے میں لوڈشیڈنگ ہو رہی ہے۔"
 -> {{"document_type": "complaint_letter"}}
-(Same content as above, in Urdu script — complaint about a utility provider.)
 
 Transcript: "Hello, today is 15th of June, Wednesday."
 -> {{"document_type": "no_intent"}}
 
 Transcript: "ہیلو، آج 15 جون بدھ ہے۔"
 -> {{"document_type": "no_intent"}}
-(Just a date statement in Urdu script — no request verb present.)
 
 Transcript: "Good morning, I am Ayesha Niazi and I am making this project to test."
 -> {{"document_type": "no_intent"}}
 
 Transcript: "صبح بخیر، میرا نام عائشہ نیازی ہے اور میں یہ پروجیکٹ ٹیسٹ کر رہی ہوں۔"
 -> {{"document_type": "no_intent"}}
-(Same self-introduction pattern in Urdu script — no request verb present.)
 
 Transcript: "muje parson se do din ki chuti chahye i am not well."
 -> {{"document_type": "unknown"}}
 
 Transcript: "مجھے پرسوں سے دو دن کی چھٹی چاہیے، میری طبیعت ٹھیک نہیں ہے۔"
 -> {{"document_type": "unknown"}}
-(Same bare leave request in Urdu script, no workplace or school context — type unclear.)
 
 TODAY'S DATE is not needed for classification — focus only on WHAT KIND of document is being
 requested, if any, regardless of script.
@@ -145,13 +133,10 @@ def classify(transcript: str, model: str = CLASSIFY_MODEL) -> str:
             and not has_workplace_marker and not has_complaint_marker):
         return "unknown"
 
-    response = ollama.chat(
+    raw = chat_json(
+        [{"role": "user", "content": CLASSIFIER_PROMPT.format(transcript=transcript)}],
         model=model,
-        messages=[{"role": "user", "content": CLASSIFIER_PROMPT.format(transcript=transcript)}],
-        format="json",
-        options={"temperature": 0},
     )
-    raw = response["message"]["content"]
     try:
         data = json.loads(raw)
         doc_type = data.get("document_type", "no_intent")

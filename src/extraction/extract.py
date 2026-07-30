@@ -1,6 +1,5 @@
 import json
 from datetime import date
-import ollama
 from pydantic import ValidationError
 
 from src.extraction.schemas import DOCUMENT_SCHEMAS
@@ -9,10 +8,10 @@ from src.extraction.classify import classify
 from src.extraction.normalize import (
     cross_check_duration, resolve_relative_date, validate_iso_date, format_phone_number
 )
+from src.extraction.llm_backend import chat_json
 
 MODEL_NAME = "llama3.2"
 MAX_RETRIES = 2
-
 PHONE_FIELDS = {"contact_number", "reference_number"}
 
 
@@ -29,8 +28,7 @@ def cross_check_start_date(transcript: str, llm_extracted_value, today: date) ->
 
 
 def _call_llm(messages: list[dict], model: str) -> str:
-    response = ollama.chat(model=model, messages=messages, format="json", options={"temperature": 0})
-    return response["message"]["content"]
+    return chat_json(messages, model=model)
 
 
 def extract(transcript: str, today: str | None = None, model: str = MODEL_NAME,
@@ -118,8 +116,7 @@ def extract(transcript: str, today: str | None = None, model: str = MODEL_NAME,
         if field in data and isinstance(data[field], str):
             formatted = format_phone_number(data[field])
             if formatted != data[field]:
-                print(f"[extract] {field} formatted by normalize layer: "
-                      f"{data[field]} -> {formatted}")
+                print(f"[extract] {field} formatted by normalize layer: {data[field]} -> {formatted}")
             data[field] = formatted
 
     form = schema_cls(**data)

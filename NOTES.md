@@ -264,3 +264,27 @@ R2 (extraction robustness — iteratively improved through documented,
 evidence-driven fixes), R4 (clarification/confirmation policy). This
 represents the project's strongest R&D material: a full before/after
 accuracy trajectory with root-caused, fixed failure patterns.
+
+## Week 4, Day 2 — Document preview + edit-by-command
+
+Added render_preview() showing the letter's actual text before
+generating the .docx, reusing the same body-paragraph writers as
+generate.py so preview matches output exactly.
+
+Added apply_edit_command(): a focused LLM call scoped to only the
+current form's populated fields, parses a natural-language correction
+(e.g. "change the date to Tuesday") and returns just the changed
+field(s) rather than re-running full extraction. Wired into app.py as
+a text input between the preview and the generate button.
+
+## Week 4, Day 3 — UI polish
+
+Added a step-by-step progress bar (transcribing -> classifying/
+extracting -> done) instead of a single opaque spinner, since medium
+Whisper latency on Urdu clips can run 20-200+ seconds (per R1
+findings) and users need visible feedback during that wait.
+
+Consolidated the three error states (no_intent, unknown-type,
+generic failure) into a consistent style with emoji icons and added
+"Try again"/"Start over" buttons to each, so users aren't stuck
+needing to use "Record again" specifically to recover from an error.
