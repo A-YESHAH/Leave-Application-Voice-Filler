@@ -21,6 +21,12 @@ Rules:
    ami/ammi = mother, abbu/walid = father, behen/bhen = sister, bhai = brother,
    dada/dadi = paternal grandfather/grandmother, nana/nani = maternal grandfather/grandmother,
    khala = maternal aunt, phupo = paternal aunt, chacha/mamu = uncle.
+10. If a reason IS stated, even vaguely (e.g. "something came up at home", "personal matter"),
+   capture it as stated rather than leaving it null. Only leave reason null if NO reason was
+   mentioned at all.
+11. Extract EVERY field that is mentioned, even if multiple fields are stated close together
+   in the same sentence. Do not stop after extracting the first few facts you notice — scan
+   the entire transcript for all fields in the schema before finalizing your answer.
 
 TODAY'S DATE: {today}
 
@@ -125,7 +131,7 @@ Rules:
 3. Convert spoken/Urdu numbers to integers.
 4. If a field is not mentioned, leave it null. Do NOT guess.
 5. "Sir"/"Madam" in the utterance sets recipient_salutation accordingly.
-7. Always output applicant/student names in Roman script (English letters), even if the
+6. Always output applicant/student names in Roman script (English letters), even if the
    transcript gives the name in Urdu script. Transliterate phonetically — do not translate
    the meaning of the name, just its sound (e.g. "عائشہ نیازی" -> "Ayesha Niazi").
    6. Common Urdu kinship terms and their correct English translations — use these exactly,
@@ -133,6 +139,12 @@ Rules:
    ami/ammi = mother, abbu/walid = father, behen/bhen = sister, bhai = brother,
    dada/dadi = paternal grandfather/grandmother, nana/nani = maternal grandfather/grandmother,
    khala = maternal aunt, phupo = paternal aunt, chacha/mamu = uncle.
+7. If a reason IS stated, even vaguely (e.g. "something came up at home", "personal matter"),
+   capture it as stated rather than leaving it null. Only leave reason null if NO reason was
+   mentioned at all.
+8. Extract EVERY field that is mentioned, even if multiple fields are stated close together
+   in the same sentence. Do not stop after extracting the first few facts you notice — scan
+   the entire transcript for all fields in the schema before finalizing your answer.
 
 TODAY'S DATE: {today}
 
@@ -171,11 +183,19 @@ Rules:
 7. Always output applicant/student names in Roman script (English letters), even if the
    transcript gives the name in Urdu script. Transliterate phonetically — do not translate
    the meaning of the name, just its sound (e.g. "عائشہ نیازی" -> "Ayesha Niazi").
-   6. Common Urdu kinship terms and their correct English translations — use these exactly,
+8. Common Urdu kinship terms and their correct English translations — use these exactly,
    do not substitute a different family member:
    ami/ammi = mother, abbu/walid = father, behen/bhen = sister, bhai = brother,
    dada/dadi = paternal grandfather/grandmother, nana/nani = maternal grandfather/grandmother,
    khala = maternal aunt, phupo = paternal aunt, chacha/mamu = uncle.
+9. CRITICAL: Never copy organization names, complaint subjects, or any field values from
+   the example transcripts shown above. Every value must come ONLY from the actual transcript
+   you are extracting from. If the organization name is unclear or garbled in the transcript,
+   set organization_name to null rather than substituting a name from an example.
+10. Extract EVERY field that is mentioned, even if multiple fields are stated close together
+   in the same sentence. Do not stop after extracting the first few facts you notice — scan
+   the entire transcript for all fields in the schema before finalizing your answer.
+   
 
 TODAY'S DATE: {today}
 

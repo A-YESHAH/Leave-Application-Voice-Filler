@@ -6,7 +6,7 @@ from datetime import date
 
 from src.stt.transcribe import transcribe
 from src.extraction.extract import extract
-from src.dialogue.clarify import get_next_question, apply_answer
+from src.dialogue.clarify import get_next_question, apply_answer, needs_confirmation, apply_confirmation
 from src.generation.generate import generate
 
 st.set_page_config(page_title="Voice-Based Form Filler", page_icon="🎙️")
@@ -23,6 +23,8 @@ if "needs_type_selection" not in st.session_state:
     st.session_state.needs_type_selection = False
 if "no_intent" not in st.session_state:
     st.session_state.no_intent = False
+if "confirmed_fields" not in st.session_state:
+    st.session_state.confirmed_fields = set()
 
 DOC_TYPE_LABELS = {
     "leave_application_office": "Office leave application",
@@ -52,6 +54,7 @@ with tab_record:
         st.session_state.transcript = None
         st.session_state.needs_type_selection = False
         st.session_state.no_intent = False
+        st.session_state.confirmed_fields = set()
         st.rerun()
 
 with tab_upload:
@@ -112,33 +115,47 @@ if st.session_state.form is not None:
     form = st.session_state.form
     st.json(form.model_dump())
 
-    st.subheader("4. Fill in missing details")
-    next_q = get_next_question(form)
+    confirm_needed = needs_confirmation(form, st.session_state.confirmed_fields)
 
-    if next_q:
-        field, question = next_q
-        with st.form(key=f"clarify_{field}"):
-            answer = st.text_input(question)
+    if confirm_needed:
+        field, question = confirm_needed
+        st.subheader("4. Please confirm")
+        with st.form(key=f"confirm_{field}"):
+            st.write(question)
+            answer = st.text_input("Your response")
             submitted = st.form_submit_button("Submit")
             if submitted and answer.strip():
-                apply_answer(form, field, answer)
+                apply_confirmation(form, field, answer, st.session_state.confirmed_fields)
                 st.session_state.form = form
                 st.rerun()
     else:
-        st.success("All required fields present — ready to generate.")
-        st.subheader("5. Document")
-        if st.button("Generate document"):
-            out_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.docx"
-            try:
-                generate(form, out_path)
-                with open(out_path, "rb") as f:
-                    st.download_button(
-                        "Download .docx",
-                        data=f.read(),
-                        file_name="document.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    )
-            except ValueError as e:
-                st.error(str(e))
+        st.subheader("4. Fill in missing details")
+        next_q = get_next_question(form)
+
+        if next_q:
+            field, question = next_q
+            with st.form(key=f"clarify_{field}"):
+                answer = st.text_input(question)
+                submitted = st.form_submit_button("Submit")
+                if submitted and answer.strip():
+                    apply_answer(form, field, answer)
+                    st.session_state.form = form
+                    st.rerun()
+        else:
+            st.success("All required fields present — ready to generate.")
+            st.subheader("5. Document")
+            if st.button("Generate document"):
+                out_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.docx"
+                try:
+                    generate(form, out_path)
+                    with open(out_path, "rb") as f:
+                        st.download_button(
+                            "Download .docx",
+                            data=f.read(),
+                            file_name="document.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        )
+                except ValueError as e:
+                    st.error(str(e))
 elif not audio_path:
     st.info("Record or upload a voice note to get started.")

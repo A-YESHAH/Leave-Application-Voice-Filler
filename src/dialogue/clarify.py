@@ -35,6 +35,16 @@ QUESTIONS: dict[str, dict[str, str]] = {
         "issue_description": "Please describe the issue in more detail (what's happening, since when).",
     },
 }
+CONFIRMATION_FIELDS = {
+    "leave_application_office": ["leave_type"],
+}
+
+CONFIRMATION_PROMPTS = {
+    "leave_type": lambda form: (
+        f"Based on your reason ('{form.reason}'), I'm assuming this is "
+        f"**{form.leave_type} leave**. Is that correct? (yes / or tell me the correct type)"
+    ),
+}
 
 INT_FIELDS = {"duration_days"}
 
@@ -63,4 +73,42 @@ def apply_answer(form, field: str, raw_answer: str):
 
     setattr(form, field, value)
     form.compute_missing()
+    return form
+
+def needs_confirmation(form, already_confirmed: set[str]) -> tuple[str, str] | None:
+    """
+    Returns (field, confirmation_question) for a field whose value was
+    inferred rather than explicitly stated, and hasn't been confirmed yet.
+    Only applies to fields listed in CONFIRMATION_FIELDS for this doc type.
+    """
+    doc_type = form.document_type
+    fields_to_confirm = CONFIRMATION_FIELDS.get(doc_type, [])
+
+    for field in fields_to_confirm:
+        value = getattr(form, field, None)
+        if value is not None and field not in already_confirmed:
+            prompt_fn = CONFIRMATION_PROMPTS.get(field)
+            if prompt_fn:
+                return field, prompt_fn(form)
+
+    return None
+
+
+def apply_confirmation(form, field: str, user_response: str, already_confirmed: set[str]):
+    """
+    If user says yes/confirms, mark as confirmed. Otherwise, treat their
+    response as a correction and overwrite the field, then still mark
+    confirmed (so we don't loop forever).
+    """
+    response_lower = user_response.strip().lower()
+    affirmative = {"yes", "yeah", "yep", "correct", "haan", "ہاں", "ٹھیک"}
+
+    if response_lower not in affirmative:
+        if field == "leave_type":
+            for candidate in ("casual", "sick", "annual"):
+                if candidate in response_lower:
+                    setattr(form, field, candidate)
+                    break
+
+    already_confirmed.add(field)
     return form

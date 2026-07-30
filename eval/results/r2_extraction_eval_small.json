@@ -1,0 +1,144 @@
+[
+  {
+    "clip_id": "clip_001",
+    "type_match": true,
+    "field_accuracy": 0.75,
+    "mismatches": [
+      "reason: expected=\"mother's illness\" got='mother is ill'"
+    ]
+  },
+  {
+    "clip_id": "clip_002",
+    "type_match": true,
+    "field_accuracy": null,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_003",
+    "type_match": true,
+    "field_accuracy": null,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_004",
+    "type_match": false,
+    "field_accuracy": null,
+    "mismatches": [
+      "extract() error: NO_DOCUMENT_INTENT: I couldn't find a request for any document in that. Try describing what you need — e.g. 'I need 3 days leave...' or 'I want to file a complaint about...'"
+    ]
+  },
+  {
+    "clip_id": "clip_005",
+    "type_match": true,
+    "field_accuracy": 0.7142857142857143,
+    "mismatches": [
+      "company_name: expected='TechSol' got='Texol Amasoffer Engineer'",
+      "applicant_designation: expected='Software Engineer' got=None"
+    ]
+  },
+  {
+    "clip_id": "clip_006",
+    "type_match": true,
+    "field_accuracy": 0.5,
+    "mismatches": [
+      "reason: expected='family/personal work at home' got='personal matter'"
+    ]
+  },
+  {
+    "clip_id": "clip_007",
+    "type_match": true,
+    "field_accuracy": null,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_008",
+    "type_match": true,
+    "field_accuracy": 0.8181818181818182,
+    "mismatches": [
+      "department: expected='Computer Science' got=None",
+      "start_date: expected='2026-07-30' got='2026-07-29'"
+    ]
+  },
+  {
+    "clip_id": "clip_009",
+    "type_match": true,
+    "field_accuracy": 1.0,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_010",
+    "type_match": true,
+    "field_accuracy": 1.0,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_011",
+    "type_match": true,
+    "field_accuracy": 1.0,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_012",
+    "type_match": true,
+    "field_accuracy": 0.5,
+    "mismatches": [
+      "organization_name: expected='Nayatel' got=None",
+      "complaint_subject: expected='Internet Outage' got='New Pump Not Working'"
+    ]
+  },
+  {
+    "clip_id": "clip_013",
+    "type_match": true,
+    "field_accuracy": 1.0,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_014",
+    "type_match": true,
+    "field_accuracy": 0.6666666666666666,
+    "mismatches": [
+      "complainant_name: expected='Bilal Ahmed' got='Blāl امناd'",
+      "organization_name: expected='K-Electric' got=None",
+      "recipient_designation: expected='Customer Services Manager' got=None"
+    ]
+  },
+  {
+    "clip_id": "clip_015",
+    "type_match": true,
+    "field_accuracy": 1.0,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_016",
+    "type_match": true,
+    "field_accuracy": 0.5714285714285714,
+    "mismatches": [
+      "leave_type: expected='sick' got='casual'",
+      "department: expected='Engineering' got='R&D'",
+      "start_date: expected='2026-07-30' got='2026-07-31'"
+    ]
+  },
+  {
+    "clip_id": "clip_017",
+    "type_match": true,
+    "field_accuracy": 1.0,
+    "mismatches": []
+  },
+  {
+    "clip_id": "clip_018",
+    "type_match": true,
+    "field_accuracy": 0.16666666666666666,
+    "mismatches": [
+      "department: expected='Engineering' got=None",
+      "employee_id: expected='EMP-2041' got=None",
+      "recipient_name: expected='Ahmed Khan' got=None",
+      "recipient_designation: expected='Manager' got=None",
+      "company_name: expected='TechSol' got=None",
+      "leave_type: expected='casual' got=None",
+      "reason: expected=\"sister's wedding\" got=None",
+      "duration_days: expected=3 got=None",
+      "start_date: expected='2026-07-30' got=None",
+      "contact_number: expected='0300-1234567' got='01234567'"
+    ]
+  }
+]

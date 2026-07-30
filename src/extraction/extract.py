@@ -6,14 +6,20 @@ from pydantic import ValidationError
 from src.extraction.schemas import DOCUMENT_SCHEMAS
 from src.extraction.prompts import build_messages
 from src.extraction.classify import classify
-from src.extraction.normalize import cross_check_duration, resolve_relative_date, validate_iso_date
+from src.extraction.normalize import (
+    cross_check_duration, resolve_relative_date, validate_iso_date, format_phone_number
+)
 
 MODEL_NAME = "llama3.2"
 MAX_RETRIES = 2
 
+PHONE_FIELDS = {"contact_number", "reference_number"}
+
 
 def cross_check_start_date(transcript: str, llm_extracted_value, today: date) -> tuple:
-    llm_valid = llm_extracted_value is not None and validate_iso_date(llm_extracted_value)
+    llm_valid = (llm_extracted_value is not None
+                 and validate_iso_date(llm_extracted_value)
+                 and date.fromisoformat(llm_extracted_value) >= today)
     if llm_valid:
         return llm_extracted_value, False
     rule_based_value = resolve_relative_date(transcript, today)
@@ -107,6 +113,14 @@ def extract(transcript: str, today: str | None = None, model: str = MODEL_NAME,
         data["start_date"] = corrected_date
     elif "start_date" in data:
         del data["start_date"]
+
+    for field in PHONE_FIELDS:
+        if field in data and isinstance(data[field], str):
+            formatted = format_phone_number(data[field])
+            if formatted != data[field]:
+                print(f"[extract] {field} formatted by normalize layer: "
+                      f"{data[field]} -> {formatted}")
+            data[field] = formatted
 
     form = schema_cls(**data)
     form.compute_missing()

@@ -1,0 +1,258 @@
+{
+  "small": [
+    {
+      "clip_id": "clip_001",
+      "transcript": "اپنی ملیون پہنچ ساری application میرے امی بہت بھی مار ہے مجھے یہ اللیہ چاہی اپنی اندروس چھکلیے i am in fifth semester my department is bscs and i am writing this application to Head of Department",
+      "latency_sec": 363.06,
+      "detected_language": "ur",
+      "expected_gist": "Mother is very sick, need a university leave application, in semester 5, BSCS department, addressed to Head of Department"
+    },
+    {
+      "clip_id": "clip_002",
+      "transcript": "کل بای ساریق ہے",
+      "latency_sec": 27.74,
+      "detected_language": "ur",
+      "expected_gist": "Tomorrow is the 22nd — just a date statement, no request"
+    },
+    {
+      "clip_id": "clip_003",
+      "transcript": "مجھے آگلے ہفتے دو دن کی چھٹی جاہی ہے",
+      "latency_sec": 31.45,
+      "detected_language": "ur",
+      "expected_gist": "Need 2 days leave next week — bare request, no workplace or school context"
+    },
+    {
+      "clip_id": "clip_004",
+      "transcript": "مجھے پیٹی سیل کو کمکلین کرنی ہے انٹرنٹ بہت سلو ہے",
+      "latency_sec": 33.62,
+      "detected_language": "ur",
+      "expected_gist": "Need to complain to PTCL, internet is very slow"
+    },
+    {
+      "clip_id": "clip_005",
+      "transcript": "I need three days' casual leave starting Monday for my cousin's wedding. My manager is Ahmed Khan at Texol Amasoffer Engineer.",
+      "latency_sec": 19.89,
+      "detected_language": "en",
+      "expected_gist": "3 days casual leave starting Monday for cousin's wedding, manager Ahmed Khan at TechSol, applicant is a software engineer"
+    },
+    {
+      "clip_id": "clip_006",
+      "transcript": "مجھے چار دن کی چھٹی چاہیے گھر میں کچھ کام ہے مجھے یونیویسٹیک لیے لیے لیو اپلیگیشن لگتو",
+      "latency_sec": 41.83,
+      "detected_language": "ur",
+      "expected_gist": "Need 4 days leave, some work at home, need a university leave application written"
+    },
+    {
+      "clip_id": "clip_007",
+      "transcript": "Sir, I need leave for two days.",
+      "latency_sec": 18.7,
+      "detected_language": "en",
+      "expected_gist": "Sir, I need leave for two days — bare request, no context"
+    },
+    {
+      "clip_id": "clip_008",
+      "transcript": "مجھے لیو اپلکیشن یونیویسٹی کے لے لکھ دو میرا نام حسن رزا ہے میرا رول نمبر 21 ہے میرا پرگرام بیس چیس ہے میں 7 سمیسٹر میں ہوں اور میری یونیویسٹی ہے یونیویسٹی آف کراچی میرا دپارٹمنٹ ہے کمپیٹر سائنس یہ جو اپلکیشن لکھنی ہے یہ لکھنی ہے ہیڈ آف دپارٹمنٹ کو اور جو ہیڈ آف دپارٹمنٹ ہے وہ سر ہے اور یہ چھٹی مجھے چاہیے 30 تاریق سے صرف ایک دن کے لیے کیونکہ میں جو بخار ہے",
+      "latency_sec": 308.21,
+      "detected_language": "ur",
+      "expected_gist": "Write a university leave application, name Hassan Raza, roll number 21, BSCS program, semester 7, University of Karachi, Computer Science department, addressed to Head of Department (Sir), leave from the 30th for 1 day due to fever"
+    },
+    {
+      "clip_id": "clip_009",
+      "transcript": "سر کو اپلکیشن لکھنی ہے کل میں کلاز اٹین نہیں کر سکتی مجھے بخار ہے میں ففت سمیسٹر میں ہوں اور میرا رول نمبر ہے 32",
+      "latency_sec": 22.93,
+      "detected_language": "ur",
+      "expected_gist": "Need to write application to Sir, can't attend class tomorrow, fever, semester 5, roll number 32"
+    },
+    {
+      "clip_id": "clip_010",
+      "transcript": "I want to complain to K Electric about power outages in my area and it's been happening for a week.",
+      "latency_sec": 20.02,
+      "detected_language": "en",
+      "expected_gist": "Complaint to K-Electric about power outages in the area, happening for a week"
+    },
+    {
+      "clip_id": "clip_011",
+      "transcript": "I want to complain to K Electric about power outages in my area and it's been happening for a week.",
+      "latency_sec": 19.8,
+      "detected_language": "en",
+      "expected_gist": "Duplicate of clip_010 — complaint to K-Electric about power outages for a week"
+    },
+    {
+      "clip_id": "clip_012",
+      "transcript": "مجھے ایک کمپلینٹ اپڑیکشن لکھنی ہے نیا ٹل کو کو کمیرہ نیا ٹل کا نٹ ایک دن سے نہیں چل رہا یہ مانجر کو لکھنی ہے",
+      "latency_sec": 46.16,
+      "detected_language": "ur",
+      "expected_gist": "Complaint to Nayatel — internet not working for a day, addressed to the manager"
+    },
+    {
+      "clip_id": "clip_013",
+      "transcript": "I want to complain to K Electric about power outages in my area. It's been happening for a week.",
+      "latency_sec": 20.36,
+      "detected_language": "en",
+      "expected_gist": "Reworded duplicate of clip_010/011 — complaint to K-Electric about power outages for a week"
+    },
+    {
+      "clip_id": "clip_014",
+      "transcript": "مجھے ایک کمپلینٹ اپٹیکیشن ایک دو میرا نام بلال اہمند ہے میرا ادرس ہے ہاوس12blog6 گلشن ایک بال رفرنس نمبر ہے a l553421 اور میرا phone نمبر ہے 03219876543 اوڈگنائیزیوشن کا نام ہے کہ ایلیکٹریک یہ میں لکھ رہی ہوں ایک کمپلینٹ کا سبجیکٹ ہے پرو لونگ ان سکیڈر لوڈ شیٹنگ 8 گھنٹے دیلی لوڈ شیٹنگ ہوتی ہے 3 دن سے یہ اشو 3 دن پہلے شروع ہوا تھا",
+      "latency_sec": 55.52,
+      "detected_language": "ur",
+      "expected_gist": "Full complaint: name Bilal Ahmed, address House 12 Block 6 Gulshan Iqbal, reference number AL-553421, phone 0321-9876543, organization K-Electric, addressed to Customer Services Manager, subject Prolonged Unscheduled Load Shedding, 8 hours daily loadshedding for 3 days, issue started 3 days ago"
+    },
+    {
+      "clip_id": "clip_015",
+      "transcript": "I need three days casual leave starting from Monday for my cousin's wedding. My manager is Ahmed Khan at Tech Soul. I'm a software engineer. My name is Aisha Niazi.",
+      "latency_sec": 20.48,
+      "detected_language": "en",
+      "expected_gist": "3 days casual leave from Monday for cousin's wedding, manager Ahmed Khan at TechSol, software engineer, name Aisha Niazi"
+    },
+    {
+      "clip_id": "clip_016",
+      "transcript": "مجھے تین دن کی سکلیو چاہی مجھے بخار ہے میرا نام فاتمہ آلی ہے میں سوفر انجینئر ہوں میرا دپارٹ میں رنجینئرنگ کا ہے مجھے یہ چھٹی تیس تاریق سے چاہی ہے",
+      "latency_sec": 25.38,
+      "detected_language": "ur",
+      "expected_gist": "3 days sick leave, fever, name Fatima Ali, software engineer, Engineering department, leave from the 30th"
+    },
+    {
+      "clip_id": "clip_017",
+      "transcript": "I need one day off from class tomorrow. I have a fever. I am a B.Sc. student semester 5, roll number 20 CS 030.",
+      "latency_sec": 19.57,
+      "detected_language": "en",
+      "expected_gist": "One day off from class tomorrow, fever, BSCS student, semester 5, roll number 20-CS-030"
+    },
+    {
+      "clip_id": "clip_018",
+      "transcript": "مجھے یہاں ایک لیو اپلیکیشن آفس کیلے لکتو میرا نام فاتمہ علی ہے مھے سوفتوار انجینر ہوں ڈپارٹمنٹ میرا انجینرینگ ہے میری بالنص里 الفیرہ pulling امننا نائی ن之前 بنائے گے تو nuanced comm روائف کو ٹمر테orum ایک روائف لکھنائی lessons اقت기 نے روائف سکنکر کو ساتھ participation پہلی اندن ساتھ چیز گھوٹے میڈا김 rechts ڈبل 01234567",
+      "latency_sec": 402.74,
+      "detected_language": "ur",
+      "expected_gist": "Full office leave application: name Fatima Ali, software engineer, Engineering department, employee ID EMP-2041, addressed to Ahmed Khan (manager at TechSol), sister's wedding, 3 days leave from the 30th, contact number 0300-1234567"
+    }
+  ],
+  "medium": [
+    {
+      "clip_id": "clip_001",
+      "transcript": "میری امی بہت بیمار ہے مجھے یہ اپلکیشن چاہیے اپنی انویسٹی کے لئے میں 5 سمسٹر میں آئیہ دپارٹمنٹ اس بی ای سی ایس اور میں اس اپلکیشن کو ہیڈ اف ڈپارٹمنٹ رکھ رہا ہوں",
+      "latency_sec": 95.67,
+      "detected_language": "ur",
+      "expected_gist": "Mother is very sick, need a university leave application, in semester 5, BSCS department, addressed to Head of Department"
+    },
+    {
+      "clip_id": "clip_002",
+      "transcript": "کل بائیس تاریک ہے",
+      "latency_sec": 97.49,
+      "detected_language": "ur",
+      "expected_gist": "Tomorrow is the 22nd — just a date statement, no request"
+    },
+    {
+      "clip_id": "clip_003",
+      "transcript": "مجھے اگلے ہفتے دو دن کی چھوٹی چاہیے",
+      "latency_sec": 113.98,
+      "detected_language": "ur",
+      "expected_gist": "Need 2 days leave next week — bare request, no workplace or school context"
+    },
+    {
+      "clip_id": "clip_004",
+      "transcript": "مجھے پی ٹی سیل کو کمپلین کرنی ہے انٹرنٹ بہت سلو ہے",
+      "latency_sec": 207.52,
+      "detected_language": "ur",
+      "expected_gist": "Need to complain to PTCL, internet is very slow"
+    },
+    {
+      "clip_id": "clip_005",
+      "transcript": "I need three days' casual leave starting Monday for my cousin's wedding. My manager is Ahmed Khan at Texol. I'm a software engineer.",
+      "latency_sec": 70.43,
+      "detected_language": "en",
+      "expected_gist": "3 days casual leave starting Monday for cousin's wedding, manager Ahmed Khan at TechSol, applicant is a software engineer"
+    },
+    {
+      "clip_id": "clip_006",
+      "transcript": "مجھے چار دن کی چھٹی چاہیے گھر میں کچھ کام ہے مجھے یونیویسٹی کے لئے لیو اپلیگیشن لکھتو",
+      "latency_sec": 142.85,
+      "detected_language": "ur",
+      "expected_gist": "Need 4 days leave, some work at home, need a university leave application written"
+    },
+    {
+      "clip_id": "clip_007",
+      "transcript": "Sir, I need leave for two days.",
+      "latency_sec": 68.31,
+      "detected_language": "en",
+      "expected_gist": "Sir, I need leave for two days — bare request, no context"
+    },
+    {
+      "clip_id": "clip_008",
+      "transcript": "مجھے لیو ایپلیکیشن یونیویسٹی کے لئے لکھ دو میرا نام حسن رزا ہے میرا رول نمبر 21 ہے میرا پروگرام بی ایس سی اے میں 7 سمیستر میں ہوں اور میری یونیویسٹی ہے یونیویسٹی آف کراچی میرا ڈپارٹمنٹ ہے کمپیٹر سائنس یہ جو ایپلیکیشن لکھنی ہے یہ لکھنی ہے ہیڈ اف ڈپارٹمنٹ کو اور جو ہیڈ اف ڈپارٹمنٹ ہیں وہ سر ہیں اور یہ چھٹی مجھے چاہیے 30 تاریق سے صرف ایک دن کے لئے کیونکہ مجھے بخار ہے",
+      "latency_sec": 183.35,
+      "detected_language": "ur",
+      "expected_gist": "Write a university leave application, name Hassan Raza, roll number 21, BSCS program, semester 7, University of Karachi, Computer Science department, addressed to Head of Department (Sir), leave from the 30th for 1 day due to fever"
+    },
+    {
+      "clip_id": "clip_009",
+      "transcript": "سر کو اپلکیشن لکھنی ہے کل میں کلاس اٹن نہیں کر سکتی مجھے بخار ہے میں 5 سمسٹر میں ہوں اور میرا رول نمبر ہے 32",
+      "latency_sec": 145.97,
+      "detected_language": "ur",
+      "expected_gist": "Need to write application to Sir, can't attend class tomorrow, fever, semester 5, roll number 32"
+    },
+    {
+      "clip_id": "clip_010",
+      "transcript": "I want to complain to K Electric about power outages in my area and it's been happening for a week.",
+      "latency_sec": 70.71,
+      "detected_language": "en",
+      "expected_gist": "Complaint to K-Electric about power outages in the area, happening for a week"
+    },
+    {
+      "clip_id": "clip_011",
+      "transcript": "I want to complain to K Electric about power outages in my area and it's been happening for a week.",
+      "latency_sec": 69.76,
+      "detected_language": "en",
+      "expected_gist": "Duplicate of clip_010 — complaint to K-Electric about power outages for a week"
+    },
+    {
+      "clip_id": "clip_012",
+      "transcript": "مجھے ایک کمپلینٹ ایپلکیشن لکھنی ہے نیر ٹیل کو کہ میرا نیر ٹیل کا نیٹ ایک دن سے نہیں چل رہا ہے یہ مینجر کو لکھنی ہے",
+      "latency_sec": 151.17,
+      "detected_language": "ur",
+      "expected_gist": "Complaint to Nayatel — internet not working for a day, addressed to the manager"
+    },
+    {
+      "clip_id": "clip_013",
+      "transcript": "I want to complain to K Electric about power outages in my area. It's been happening for a week.",
+      "latency_sec": 71.0,
+      "detected_language": "en",
+      "expected_gist": "Reworded duplicate of clip_010/011 — complaint to K-Electric about power outages for a week"
+    },
+    {
+      "clip_id": "clip_014",
+      "transcript": "مجھے ایک کمپلینٹ ایپلیکیشن لکھو میرا نام بلال احمد ہے میرا ادرس ہے ہاؤس 12 بلوک 6 گولشن اقبال ریفرنس نمبر ہے AL 553421 اور میرا فون نمبر ہے 0321 9876543 اورگنائزیشن کا نام ہے کے ایلیکٹرک یہ میں لکھ رہی ہوں کسٹمر سروسس میینجر کو اور میرا ایک کمپلینٹ کا سبجکٹ ہے Prolonged Unscheduled Load Shedding 8 گھنٹے ڈیلی لوڈ شیڈنگ ہوتی ہے 3 دن سے یہ ایشو 3 دن پہلے شروع ہوا تھا",
+      "latency_sec": 191.25,
+      "detected_language": "ur",
+      "expected_gist": "Full complaint: name Bilal Ahmed, address House 12 Block 6 Gulshan Iqbal, reference number AL-553421, phone 0321-9876543, organization K-Electric, addressed to Customer Services Manager, subject Prolonged Unscheduled Load Shedding, 8 hours daily loadshedding for 3 days, issue started 3 days ago"
+    },
+    {
+      "clip_id": "clip_015",
+      "transcript": "I need three days casual leave starting from Monday for my cousin's wedding. My manager is Ahmed Khan at TechSoul. I'm a software engineer. My name is Aisha Niazi.",
+      "latency_sec": 71.89,
+      "detected_language": "en",
+      "expected_gist": "3 days casual leave from Monday for cousin's wedding, manager Ahmed Khan at TechSol, software engineer, name Aisha Niazi"
+    },
+    {
+      "clip_id": "clip_016",
+      "transcript": "مجھے تین دن کی سک لیو چاہیے مجھے بخار ہے میرا نام فاتمہ علی ہے میں صوفویر انجینئر ہوں میرا ڈپارٹمنٹ انجینئرنگ کا ہے مجھے یہ چھوٹی تیس تاریخ سے چاہیے",
+      "latency_sec": 90.04,
+      "detected_language": "ur",
+      "expected_gist": "3 days sick leave, fever, name Fatima Ali, software engineer, Engineering department, leave from the 30th"
+    },
+    {
+      "clip_id": "clip_017",
+      "transcript": "I need one day off from class tomorrow. I have a fever. I am a BScA student semester 5, roll number 20CS030.",
+      "latency_sec": 69.17,
+      "detected_language": "en",
+      "expected_gist": "One day off from class tomorrow, fever, BSCS student, semester 5, roll number 20-CS-030"
+    },
+    {
+      "clip_id": "clip_018",
+      "transcript": "مجھے ایک لیو اپلیکیشن آفس کیلئے لکھتو میرا نام ساتمہ علی ہے میں صوفوئر انجینئر ہوں ڈپارٹمنٹ میرا انجینئرنگ ہے میری امپلائی ایڈی ای ایم پی 2 0 4 1 ہے مجھے یہ اپلیکیشن احمد خان کو لکھنی ہے جو کے مناجر ہیں ٹیکسول کمپنی میں مجھے یہ چھٹی اپنی بہن کی شادی کیلئے چاہیے تین دن کی چھٹی چاہیے ٹیس تاریخ سے اور میرا نمبر ہے 0 3 00 1234567",
+      "latency_sec": 176.19,
+      "detected_language": "ur",
+      "expected_gist": "Full office leave application: name Fatima Ali, software engineer, Engineering department, employee ID EMP-2041, addressed to Ahmed Khan (manager at TechSol), sister's wedding, 3 days leave from the 30th, contact number 0300-1234567"
+    }
+  ]
+}

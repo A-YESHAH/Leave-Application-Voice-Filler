@@ -1,0 +1,221 @@
+{
+  "reference_today": "2026-07-28",
+  "clips": {
+    "clip_001": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Mother is very sick, need a university leave application, in semester 5, BSCS department, addressed to Head of Department",
+      "expected_document_type": "leave_application_university",
+      "expected_fields": {
+        "reason": "mother's illness",
+        "semester": "5",
+        "program": "BSCS",
+        "recipient_designation": "Head of Department"
+      }
+    },
+    "clip_002": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Tomorrow is the 22nd — just a date statement, no request",
+      "expected_document_type": "no_intent",
+      "expected_fields": {}
+    },
+    "clip_003": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Need 2 days leave next week — bare request, no workplace or school context",
+      "expected_document_type": "unknown",
+      "expected_fields": {
+        "duration_days": 2,
+        "start_date": "2026-08-04"
+      }
+    },
+    "clip_004": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Need to complain to PTCL, internet is very slow",
+      "expected_document_type": "complaint_letter",
+      "expected_fields": {
+        "organization_name": "PTCL",
+        "issue_description": "internet is very slow",
+        "complaint_subject": "Slow Internet Service"
+      }
+    },
+    "clip_005": {
+      "language_mix": "english",
+      "expected_transcript_gist": "3 days casual leave starting Monday for cousin's wedding, manager Ahmed Khan at TechSol, applicant is a software engineer",
+      "expected_document_type": "leave_application_office",
+      "expected_fields": {
+        "duration_days": 3,
+        "leave_type": "casual",
+        "start_date": "2026-08-03",
+        "reason": "cousin's wedding",
+        "recipient_name": "Ahmed Khan",
+        "company_name": "TechSol",
+        "applicant_designation": "Software Engineer"
+      }
+    },
+    "clip_006": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Need 4 days leave, some work at home, need a university leave application written",
+      "expected_document_type": "leave_application_university",
+      "expected_fields": {
+        "duration_days": 4,
+        "reason": "family/personal work at home"
+      }
+    },
+    "clip_007": {
+      "language_mix": "english",
+      "expected_transcript_gist": "Sir, I need leave for two days — bare request, no context",
+      "expected_document_type": "unknown",
+      "expected_fields": {
+        "duration_days": 2
+      }
+    },
+    "clip_008": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Write a university leave application, name Hassan Raza, roll number 21, BSCS program, semester 7, University of Karachi, Computer Science department, addressed to Head of Department (Sir), leave from the 30th for 1 day due to fever",
+      "expected_document_type": "leave_application_university",
+      "expected_fields": {
+        "student_name": "Hassan Raza",
+        "roll_number": "21",
+        "program": "BSCS",
+        "semester": "7",
+        "institution_name": "University of Karachi",
+        "department": "Computer Science",
+        "recipient_designation": "Head of Department",
+        "recipient_salutation": "Sir",
+        "start_date": "2026-07-30",
+        "duration_days": 1,
+        "reason": "fever"
+      }
+    },
+    "clip_009": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Need to write application to Sir, can't attend class tomorrow, fever, semester 5, roll number 32",
+      "expected_document_type": "leave_application_university",
+      "expected_fields": {
+        "start_date": "2026-07-29",
+        "duration_days": 1,
+        "reason": "fever",
+        "semester": "5",
+        "roll_number": "32",
+        "recipient_salutation": "Sir"
+      }
+    },
+    "clip_010": {
+      "language_mix": "english",
+      "expected_transcript_gist": "Complaint to K-Electric about power outages in the area, happening for a week",
+      "expected_document_type": "complaint_letter",
+      "expected_fields": {
+        "organization_name": "K-Electric",
+        "issue_description": "power outages for a week",
+        "complaint_subject": "Power Outages"
+      }
+    },
+    "clip_011": {
+      "language_mix": "english",
+      "expected_transcript_gist": "Duplicate of clip_010 — complaint to K-Electric about power outages for a week",
+      "expected_document_type": "complaint_letter",
+      "expected_fields": {
+        "organization_name": "K-Electric",
+        "issue_description": "power outages for a week",
+        "complaint_subject": "Power Outages"
+      }
+    },
+    "clip_012": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "Complaint to Nayatel — internet not working for a day, addressed to the manager",
+      "expected_document_type": "complaint_letter",
+      "expected_fields": {
+        "organization_name": "Nayatel",
+        "issue_description": "internet not working for a day",
+        "recipient_designation": "Manager",
+        "complaint_subject": "Internet Outage"
+      }
+    },
+    "clip_013": {
+      "language_mix": "english",
+      "expected_transcript_gist": "Reworded duplicate of clip_010/011 — complaint to K-Electric about power outages for a week",
+      "expected_document_type": "complaint_letter",
+      "expected_fields": {
+        "organization_name": "K-Electric",
+        "issue_description": "power outages for a week",
+        "complaint_subject": "Power Outages"
+      }
+    },
+    "clip_014": {
+      "language_mix": "urdu_english",
+      "expected_transcript_gist": "Full complaint: name Bilal Ahmed, address House 12 Block 6 Gulshan Iqbal, reference number AL-553421, phone 0321-9876543, organization K-Electric, addressed to Customer Services Manager, subject Prolonged Unscheduled Load Shedding, 8 hours daily loadshedding for 3 days, issue started 3 days ago",
+      "expected_document_type": "complaint_letter",
+      "expected_fields": {
+        "complainant_name": "Bilal Ahmed",
+        "address": "House 12, Block 6, Gulshan-e-Iqbal",
+        "reference_number": "AL-553421",
+        "contact_number": "0321-9876543",
+        "organization_name": "K-Electric",
+        "recipient_designation": "Customer Services Manager",
+        "complaint_subject": "Prolonged Unscheduled Load Shedding",
+        "issue_description": "8 hours daily loadshedding for 3 days",
+        "issue_start": "2026-07-25"
+      }
+    },
+    "clip_015": {
+      "language_mix": "english",
+      "expected_transcript_gist": "3 days casual leave from Monday for cousin's wedding, manager Ahmed Khan at TechSol, software engineer, name Aisha Niazi",
+      "expected_document_type": "leave_application_office",
+      "expected_fields": {
+        "applicant_name": "Ayesha Niazi",
+        "duration_days": 3,
+        "leave_type": "casual",
+        "start_date": "2026-08-03",
+        "reason": "cousin's wedding",
+        "recipient_name": "Ahmed Khan",
+        "company_name": "TechSol",
+        "applicant_designation": "Software Engineer"
+      }
+    },
+    "clip_016": {
+      "language_mix": "urdu",
+      "expected_transcript_gist": "3 days sick leave, fever, name Fatima Ali, software engineer, Engineering department, leave from the 30th",
+      "expected_document_type": "leave_application_office",
+      "expected_fields": {
+        "applicant_name": "Fatima Ali",
+        "duration_days": 3,
+        "leave_type": "sick",
+        "reason": "fever",
+        "applicant_designation": "Software Engineer",
+        "department": "Engineering",
+        "start_date": "2026-07-30"
+      }
+    },
+    "clip_017": {
+      "language_mix": "english",
+      "expected_transcript_gist": "One day off from class tomorrow, fever, BSCS student, semester 5, roll number 20-CS-030",
+      "expected_document_type": "leave_application_university",
+      "expected_fields": {
+        "duration_days": 1,
+        "start_date": "2026-07-29",
+        "reason": "fever",
+        "program": "BSCS",
+        "semester": "5",
+        "roll_number": "20-CS-030"
+      }
+    },
+    "clip_018": {
+      "language_mix": "urdu_english",
+      "expected_transcript_gist": "Full office leave application: name Fatima Ali, software engineer, Engineering department, employee ID EMP-2041, addressed to Ahmed Khan (manager at TechSol), sister's wedding, 3 days leave from the 30th, contact number 0300-1234567",
+      "expected_document_type": "leave_application_office",
+      "expected_fields": {
+        "applicant_name": "Fatima Ali",
+        "applicant_designation": "Software Engineer",
+        "department": "Engineering",
+        "employee_id": "EMP-2041",
+        "recipient_name": "Ahmed Khan",
+        "recipient_designation": "Manager",
+        "company_name": "TechSol",
+        "leave_type": "casual",
+        "reason": "sister's wedding",
+        "duration_days": 3,
+        "start_date": "2026-07-30",
+        "contact_number": "0300-1234567"
+      }
+    }
+  }
+}

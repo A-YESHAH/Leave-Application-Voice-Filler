@@ -1,5 +1,5 @@
 from typing import Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class BaseForm(BaseModel):
@@ -55,6 +55,13 @@ class LeaveApplicationUniversityForm(BaseForm):
     recipient_salutation: Optional[str] = None
     semester: Optional[str] = None
     department: Optional[str] = None
+
+    @field_validator("semester", mode="before")
+    @classmethod
+    def coerce_semester_to_str(cls, v):
+        if v is not None:
+            return str(v)
+        return v
 
     def _required_fields(self) -> list[str]:
         return ["student_name", "roll_number", "program", "institution_name",
