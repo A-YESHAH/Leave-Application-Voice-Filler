@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import uuid
 from datetime import date
+import os
 
 from src.stt.transcribe import transcribe
 from src.extraction.extract import extract
