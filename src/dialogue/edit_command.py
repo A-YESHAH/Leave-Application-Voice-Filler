@@ -1,9 +1,11 @@
 import json
 import os
+import re
 from datetime import date
 
 from src.extraction.llm_backend import chat_json
-from src.utils.date_utils import parse_date
+from src.utils.date_utils import parse_date, WEEKDAYS, WEEKDAY_FUZZY_CUTOFF
+import difflib
 
 
 DEFAULT_MODEL = os.getenv("GROQ_LLM_MODEL")
@@ -65,6 +67,33 @@ INT_FIELDS = {
 }
 
 
+def _weekday_phrase_from_command(command: str) -> str | None:
+    """
+    Scans the user's raw command for a (possibly misspelled) weekday
+    name and returns a normalized "next <weekday>" phrase.
+
+    This lets us resolve weekday dates ourselves, deterministically,
+    instead of trusting the LLM to have done the date math correctly.
+    """
+
+    for word in re.findall(r"[a-zA-Z]+", command.lower()):
+
+        if word in WEEKDAYS:
+            return f"next {word}"
+
+        close = difflib.get_close_matches(
+            word,
+            WEEKDAYS.keys(),
+            n=1,
+            cutoff=WEEKDAY_FUZZY_CUTOFF,
+        )
+
+        if close:
+            return f"next {close[0]}"
+
+    return None
+
+
 def apply_edit_command(
     form,
     command: str,
@@ -122,7 +151,11 @@ def apply_edit_command(
 
         if field in DATE_FIELDS:
 
-            parsed = parse_date(str(value))
+            weekday_override = _weekday_phrase_from_command(command)
+
+            parsed = parse_date(
+                weekday_override if weekday_override else str(value)
+            )
 
             if parsed is None:
                 continue

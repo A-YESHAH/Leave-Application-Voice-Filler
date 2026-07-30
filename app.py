@@ -196,39 +196,39 @@ if st.session_state.form is not None:
 
             st.subheader("6. Document")
 
-if st.button("Generate document"):
-    try:
-        # Temporary output paths
-        docx_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.docx"
-        pdf_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.pdf"
+            if st.button("Generate document"):
+                try:
+                    # Temporary output paths
+                    docx_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.docx"
+                    pdf_path = Path(tempfile.gettempdir()) / f"document_{uuid.uuid4().hex}.pdf"
 
-        # Generate DOCX
-        generate(form, docx_path)
+                    # Generate DOCX
+                    generate(form, docx_path)
 
-        # Generate PDF
-        generate_pdf(form, pdf_path)
+                    # Generate PDF
+                    generate_pdf(form, pdf_path)
 
-        st.success("Document generated successfully!")
+                    st.success("Document generated successfully!")
 
-        # Download DOCX
-        with open(docx_path, "rb") as f:
-            st.download_button(
-                label="📄 Download DOCX",
-                data=f.read(),
-                file_name="document.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            )
+                    # Download DOCX
+                    with open(docx_path, "rb") as f:
+                        st.download_button(
+                            label="📄 Download DOCX",
+                            data=f.read(),
+                            file_name="document.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        )
 
-        # Download PDF
-        with open(pdf_path, "rb") as f:
-            st.download_button(
-                label="📕 Download PDF",
-                data=f.read(),
-                file_name="document.pdf",
-                mime="application/pdf",
-            )
+                    # Download PDF
+                    with open(pdf_path, "rb") as f:
+                        st.download_button(
+                            label="📕 Download PDF",
+                            data=f.read(),
+                            file_name="document.pdf",
+                            mime="application/pdf",
+                        )
 
-    except Exception as e:
-        st.error(f"Document generation failed: {e}")
+                except Exception as e:
+                    st.error(f"Document generation failed: {e}")
 elif not audio_path:
     st.info("Record or upload a voice note to get started.")
