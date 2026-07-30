@@ -1,8 +1,8 @@
 """
 Render a plain-text preview of the generated letter.
 
-This reuses the same body paragraph functions and date formatting
-from generate.py so the preview always matches the generated document.
+This reuses the same body paragraph functions as generate.py so the
+preview always matches the generated document.
 """
 
 from datetime import date
@@ -11,18 +11,22 @@ from src.generation.generate import (
     write_body_paragraph_office,
     write_body_paragraph_university,
     write_body_paragraph_complaint,
-    _format_display_date,
 )
+
+from src.utils.date_utils import format_date
 
 
 def render_preview(form) -> str:
     """
-    Returns a plain-text preview of the document.
+    Returns a plain-text preview of the generated document.
     """
 
-    today_display = _format_display_date(date.today().isoformat())
+    today_display = format_date(date.today().isoformat())
     doc_type = form.document_type
 
+    # ==========================================================
+    # Office Leave Application
+    # ==========================================================
     if doc_type == "leave_application_office":
 
         duration_display = (
@@ -33,7 +37,7 @@ def render_preview(form) -> str:
         leave_type = (
             form.leave_type.capitalize()
             if form.leave_type
-            else ""
+            else "Leave"
         )
 
         lines = [
@@ -48,6 +52,11 @@ def render_preview(form) -> str:
                 if form.employee_id
                 else None
             ),
+            (
+                f"Contact: {form.contact_number}"
+                if form.contact_number
+                else None
+            ),
             f"Date: {today_display}",
             "",
             f"To: {form.recipient_name}",
@@ -60,23 +69,24 @@ def render_preview(form) -> str:
             "",
             write_body_paragraph_office(form),
             "",
-            "I shall be grateful for your kind approval. I will ensure all pending tasks are handed over before my leave begins.",
+            "I shall be grateful for your kind approval. Thank you for your consideration.",
             "",
             "Yours sincerely,",
             form.applicant_name,
             form.applicant_designation,
-            (
-                f"Contact: {form.contact_number}"
-                if form.contact_number
-                else None
-            ),
         ]
+
+    # ==========================================================
+    # University Leave Application
+    # ==========================================================
     elif doc_type == "leave_application_university":
 
         duration_display = (
             f"{form.duration_days} day"
             f"{'s' if form.duration_days != 1 else ''}"
         )
+
+        salutation = form.recipient_salutation or "Sir/Madam"
 
         lines = [
             f"Date: {today_display}",
@@ -89,13 +99,13 @@ def render_preview(form) -> str:
             ),
             form.institution_name,
             "",
-            f"Subject: Application for Leave — {duration_display}",
+            f"Subject: Application for Leave ({duration_display})",
             "",
-            f"Respected {form.recipient_salutation},",
+            f"Respected {salutation},",
             "",
             write_body_paragraph_university(form),
             "",
-            "Kindly grant me leave for the mentioned period. I shall cover the missed coursework at the earliest.",
+            "Kindly grant me leave for the above-mentioned period. I assure you that I will cover all missed lectures, assignments, and coursework after returning.",
             "",
             "Yours obediently,",
             form.student_name,
@@ -105,26 +115,30 @@ def render_preview(form) -> str:
                 else form.program
             ),
             f"Roll No: {form.roll_number}",
+            form.institution_name,
         ]
 
+    # ==========================================================
+    # Complaint Letter
+    # ==========================================================
     elif doc_type == "complaint_letter":
 
         lines = [
             form.complainant_name,
             form.address,
             (
-                f"Consumer/Reference No: {form.reference_number}"
-                if form.reference_number
-                else None
-            ),
-            (
                 f"Contact: {form.contact_number}"
                 if form.contact_number
                 else None
             ),
+            (
+                f"Reference No: {form.reference_number}"
+                if form.reference_number
+                else None
+            ),
             f"Date: {today_display}",
             "",
-            f"To: The {form.recipient_designation}",
+            f"To: {form.recipient_designation}",
             form.organization_name,
             form.organization_address,
             "",
@@ -134,7 +148,7 @@ def render_preview(form) -> str:
             "",
             write_body_paragraph_complaint(form),
             "",
-            "I request you to kindly look into this matter urgently and resolve it at the earliest.",
+            "I would appreciate your prompt attention to this matter and look forward to a suitable resolution at the earliest.",
             "",
             "Yours faithfully,",
             form.complainant_name,
@@ -143,11 +157,10 @@ def render_preview(form) -> str:
     else:
         return "Preview not available for this document type."
 
-    cleaned_lines = []
-
-    for line in lines:
-        if line is None:
-            continue
-        cleaned_lines.append(str(line))
+    cleaned_lines = [
+        str(line)
+        for line in lines
+        if line is not None
+    ]
 
     return "\n".join(cleaned_lines)
