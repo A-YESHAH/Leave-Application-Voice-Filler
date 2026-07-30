@@ -24,9 +24,6 @@ def render_preview(form) -> str:
     today_display = format_date(date.today().isoformat())
     doc_type = form.document_type
 
-    # ==========================================================
-    # Office Leave Application
-    # ==========================================================
     if doc_type == "leave_application_office":
 
         duration_display = (
@@ -76,9 +73,6 @@ def render_preview(form) -> str:
             form.applicant_designation,
         ]
 
-    # ==========================================================
-    # University Leave Application
-    # ==========================================================
     elif doc_type == "leave_application_university":
 
         duration_display = (
@@ -118,9 +112,6 @@ def render_preview(form) -> str:
             form.institution_name,
         ]
 
-    # ==========================================================
-    # Complaint Letter
-    # ==========================================================
     elif doc_type == "complaint_letter":
 
         lines = [
