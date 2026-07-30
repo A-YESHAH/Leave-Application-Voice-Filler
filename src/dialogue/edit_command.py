@@ -5,50 +5,64 @@ from datetime import date
 from src.extraction.llm_backend import chat_json
 from src.utils.date_utils import parse_date
 
+
 DEFAULT_MODEL = os.getenv("GROQ_LLM_MODEL")
+
 
 EDIT_PROMPT = """
 The user has an existing form with these current values:
+
 {current_fields}
 
 Today's date is {today}.
 
-The user just said:
+The user said:
 
 "{command}"
 
-Determine which field(s) they want to change and to what value.
+Determine which field(s) they want to change.
 
 Return ONLY a valid JSON object containing ONLY the fields that should change.
 
-Examples:
+Examples
 
-User: change my name to Ali
-Response:
-{{"student_name":"Ali"}}
+User:
+change my name to Ali
 
-User: change the leave to sick leave
 Response:
-{{"leave_type":"sick"}}
+{"student_name":"Ali"}
 
-User: change the date to next Monday
-Response:
-{{"start_date":"next Monday"}}
+User:
+change the leave to sick leave
 
-User: change the date to 26 August 2026
 Response:
-{{"start_date":"26 August 2026"}}
+{"leave_type":"sick"}
 
-User: change the duration to 5 days
+User:
+change the date to next Monday
+
 Response:
-{{"duration_days":5}}
+{"start_date":"next Monday"}
+
+User:
+change the duration to 5 days
+
+Response:
+{"duration_days":5}
 
 If nothing should change, return:
-{{}}
+
+{}
 """
 
-DATE_FIELDS = {"start_date"}
-INT_FIELDS = {"duration_days"}
+
+DATE_FIELDS = {
+    "start_date",
+}
+
+INT_FIELDS = {
+    "duration_days",
+}
 
 
 def apply_edit_command(
@@ -57,6 +71,17 @@ def apply_edit_command(
     model: str | None = DEFAULT_MODEL,
     today: str | None = None,
 ):
+    """
+    Uses the LLM to understand edit commands such as:
+
+    - change my name to Ali
+    - change the leave to sick leave
+    - change the date to next monday
+    - make it 5 days
+
+    and updates the form.
+    """
+
     today_str = today or date.today().isoformat()
 
     current_fields = {
@@ -73,12 +98,18 @@ def apply_edit_command(
     )
 
     raw = chat_json(
-        [{"role": "user", "content": prompt}],
+        [
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
         model=model,
     )
 
     try:
         changes = json.loads(raw)
+
     except json.JSONDecodeError:
         return form, []
 
@@ -86,21 +117,29 @@ def apply_edit_command(
 
     for field, value in changes.items():
 
-        if field in DATE_FIELDS and isinstance(value, str):
-            parsed = parse_date(value)
-            if parsed:
-                value = parsed
+        if not hasattr(form, field):
+            continue
 
-        # Convert integers
-        if field in INT_FIELDS:
+        if field in DATE_FIELDS:
+
+            parsed = parse_date(str(value))
+
+            if parsed is None:
+                continue
+
+            value = parsed
+
+        elif field in INT_FIELDS:
+
             try:
                 value = int(value)
-            except (ValueError, TypeError):
-                pass
 
-        if hasattr(form, field):
-            setattr(form, field, value)
-            changed_fields.append(field)
+            except Exception:
+                continue
+
+        setattr(form, field, value)
+
+        changed_fields.append(field)
 
     form.compute_missing()
 

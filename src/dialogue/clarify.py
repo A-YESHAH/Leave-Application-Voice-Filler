@@ -2,6 +2,7 @@ from typing import Any
 
 from src.utils.date_utils import parse_date
 
+
 QUESTIONS: dict[str, dict[str, str]] = {
     "leave_application_office": {
         "applicant_name": "What is your full name?",
@@ -40,23 +41,37 @@ QUESTIONS: dict[str, dict[str, str]] = {
     },
 }
 
+
 CONFIRMATION_FIELDS = {
-    "leave_application_office": ["leave_type"],
+    "leave_application_office": [
+        "leave_type",
+    ],
 }
+
 
 CONFIRMATION_PROMPTS = {
     "leave_type": lambda form: (
-        f"Based on your reason ('{form.reason}'), I'm assuming this is "
-        f"**{form.leave_type} leave**. Is that correct? "
-        f"(yes / or tell me the correct type)"
-    ),
+        f"Based on your reason ('{form.reason}'), "
+        f"I'm assuming this is **{form.leave_type} leave**. "
+        f"Is that correct? (yes / or tell me the correct type)"
+    )
 }
 
-INT_FIELDS = {"duration_days"}
-DATE_FIELDS = {"start_date"}
+
+INT_FIELDS = {
+    "duration_days",
+}
+
+DATE_FIELDS = {
+    "start_date",
+}
 
 
 def get_next_question(form) -> tuple[str, str] | None:
+    """
+    Returns the next missing field and its question.
+    """
+
     form.compute_missing()
 
     if not form.missing_fields:
@@ -64,51 +79,83 @@ def get_next_question(form) -> tuple[str, str] | None:
 
     field = form.missing_fields[0]
 
-    question = QUESTIONS.get(form.document_type, {}).get(
+    question = QUESTIONS.get(
+        form.document_type,
+        {},
+    ).get(
         field,
-        f"Please provide: {field.replace('_', ' ')}",
+        f"Please provide {field.replace('_', ' ')}",
     )
 
     return field, question
 
 
-def apply_answer(form, field: str, raw_answer: str):
+def apply_answer(
+    form,
+    field: str,
+    raw_answer: str,
+):
+    """
+    Applies a user's clarification answer.
+    """
+
     raw_answer = raw_answer.strip()
 
     if field in INT_FIELDS:
+
         try:
             value: Any = int(raw_answer)
+
         except ValueError:
-            value = raw_answer
+            value = None
 
     elif field in DATE_FIELDS:
+
         parsed = parse_date(raw_answer)
 
         if parsed:
             value = parsed
         else:
-            value = raw_answer
+            value = None
 
     else:
+
         value = raw_answer
 
     setattr(form, field, value)
+
     form.compute_missing()
 
     return form
 
 
-def needs_confirmation(form, already_confirmed: set[str]) -> tuple[str, str] | None:
-    fields_to_confirm = CONFIRMATION_FIELDS.get(form.document_type, [])
+def needs_confirmation(
+    form,
+    already_confirmed: set[str],
+):
+    """
+    Determines whether a confirmation question should be asked.
+    """
 
-    for field in fields_to_confirm:
+    fields = CONFIRMATION_FIELDS.get(
+        form.document_type,
+        [],
+    )
+
+    for field in fields:
+
         value = getattr(form, field, None)
 
-        if value is not None and field not in already_confirmed:
-            prompt_fn = CONFIRMATION_PROMPTS.get(field)
+        if value is None:
+            continue
 
-            if prompt_fn:
-                return field, prompt_fn(form)
+        if field in already_confirmed:
+            continue
+
+        prompt_fn = CONFIRMATION_PROMPTS.get(field)
+
+        if prompt_fn:
+            return field, prompt_fn(form)
 
     return None
 
@@ -119,6 +166,10 @@ def apply_confirmation(
     user_response: str,
     already_confirmed: set[str],
 ):
+    """
+    Applies confirmation response.
+    """
+
     response = user_response.strip().lower()
 
     affirmative = {
@@ -126,19 +177,31 @@ def apply_confirmation(
         "yeah",
         "yep",
         "correct",
+        "right",
         "haan",
         "ہاں",
-        "ٹھیک",
+        "ji",
+        "جی",
+        "ok",
+        "okay",
     }
 
     if response not in affirmative:
 
         if field == "leave_type":
-            for candidate in ("casual", "sick", "annual"):
-                if candidate in response:
-                    setattr(form, field, candidate)
+
+            for leave in (
+                "casual",
+                "sick",
+                "annual",
+            ):
+
+                if leave in response:
+                    setattr(form, field, leave)
                     break
 
     already_confirmed.add(field)
+
+    form.compute_missing()
 
     return form
