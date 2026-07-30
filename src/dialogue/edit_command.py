@@ -48,7 +48,6 @@ Example output:
     "start_date": "2026-08-04"
 }}
 """
-"""
 
 
 def apply_edit_command(
