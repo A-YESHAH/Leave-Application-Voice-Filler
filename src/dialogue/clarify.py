@@ -1,4 +1,5 @@
 from typing import Any
+import dateparser
 
 QUESTIONS: dict[str, dict[str, str]] = {
     "leave_application_office": {
@@ -8,7 +9,7 @@ QUESTIONS: dict[str, dict[str, str]] = {
         "recipient_designation": "What is their designation/title (e.g. Manager, HR Manager)?",
         "company_name": "What is your company's name?",
         "leave_type": "What type of leave is this — casual, sick, or annual?",
-        "start_date": "What date does your leave start? (e.g. 2026-07-20)",
+        "start_date": "When does your leave start? (e.g. tomorrow, next Monday, 26 August 2026)",
         "duration_days": "How many days of leave do you need?",
         "reason": "What is the reason for your leave?",
     },
@@ -17,7 +18,7 @@ QUESTIONS: dict[str, dict[str, str]] = {
         "roll_number": "What is your roll number?",
         "program": "What program are you enrolled in? (e.g. BSCS)",
         "institution_name": "What is the name of your institution?",
-        "start_date": "What date does your leave start? (e.g. 2026-07-20)",
+        "start_date": "When does your leave start? (e.g. tomorrow, next Monday, 26 August 2026)",
         "duration_days": "How many days of leave do you need?",
         "reason": "What is the reason for your leave?",
         "recipient_designation": "Who is this addressed to (e.g. Class Teacher, Head of Department)?",
@@ -35,6 +36,7 @@ QUESTIONS: dict[str, dict[str, str]] = {
         "issue_description": "Please describe the issue in more detail (what's happening, since when).",
     },
 }
+
 CONFIRMATION_FIELDS = {
     "leave_application_office": ["leave_type"],
 }
@@ -42,22 +44,56 @@ CONFIRMATION_FIELDS = {
 CONFIRMATION_PROMPTS = {
     "leave_type": lambda form: (
         f"Based on your reason ('{form.reason}'), I'm assuming this is "
-        f"**{form.leave_type} leave**. Is that correct? (yes / or tell me the correct type)"
+        f"**{form.leave_type} leave**. Is that correct? "
+        f"(yes / or tell me the correct type)"
     ),
 }
 
 INT_FIELDS = {"duration_days"}
+DATE_FIELDS = {"start_date"}
 
 
 def get_next_question(form) -> tuple[str, str] | None:
     form.compute_missing()
+
     if not form.missing_fields:
         return None
 
     doc_type = form.document_type
     field = form.missing_fields[0]
-    question = QUESTIONS.get(doc_type, {}).get(field, f"Please provide: {field.replace('_', ' ')}")
+
+    question = QUESTIONS.get(doc_type, {}).get(
+        field,
+        f"Please provide: {field.replace('_', ' ')}",
+    )
+
     return field, question
+
+
+def parse_date(raw: str) -> str | None:
+    """
+    Converts natural language dates into YYYY-MM-DD.
+
+    Examples:
+    - tomorrow
+    - next Monday
+    - 26 august 2026
+    - 26 Aug 2026
+    - 26/08/2026
+    """
+
+    parsed = dateparser.parse(
+        raw,
+        settings={
+            "PREFER_DATES_FROM": "future",
+            "DATE_ORDER": "DMY",
+        },
+    )
+
+    if parsed is None:
+        return None
+
+    return parsed.date().isoformat()
 
 
 def apply_answer(form, field: str, raw_answer: str):
@@ -68,26 +104,34 @@ def apply_answer(form, field: str, raw_answer: str):
             value: Any = int(raw_answer)
         except ValueError:
             value = raw_answer
+
+    elif field in DATE_FIELDS:
+        parsed = parse_date(raw_answer)
+
+        if parsed:
+            value = parsed
+        else:
+            value = raw_answer
+
     else:
         value = raw_answer
 
     setattr(form, field, value)
     form.compute_missing()
+
     return form
 
+
 def needs_confirmation(form, already_confirmed: set[str]) -> tuple[str, str] | None:
-    """
-    Returns (field, confirmation_question) for a field whose value was
-    inferred rather than explicitly stated, and hasn't been confirmed yet.
-    Only applies to fields listed in CONFIRMATION_FIELDS for this doc type.
-    """
     doc_type = form.document_type
     fields_to_confirm = CONFIRMATION_FIELDS.get(doc_type, [])
 
     for field in fields_to_confirm:
         value = getattr(form, field, None)
+
         if value is not None and field not in already_confirmed:
             prompt_fn = CONFIRMATION_PROMPTS.get(field)
+
             if prompt_fn:
                 return field, prompt_fn(form)
 
@@ -95,13 +139,17 @@ def needs_confirmation(form, already_confirmed: set[str]) -> tuple[str, str] | N
 
 
 def apply_confirmation(form, field: str, user_response: str, already_confirmed: set[str]):
-    """
-    If user says yes/confirms, mark as confirmed. Otherwise, treat their
-    response as a correction and overwrite the field, then still mark
-    confirmed (so we don't loop forever).
-    """
     response_lower = user_response.strip().lower()
-    affirmative = {"yes", "yeah", "yep", "correct", "haan", "ہاں", "ٹھیک"}
+
+    affirmative = {
+        "yes",
+        "yeah",
+        "yep",
+        "correct",
+        "haan",
+        "ہاں",
+        "ٹھیک",
+    }
 
     if response_lower not in affirmative:
         if field == "leave_type":
