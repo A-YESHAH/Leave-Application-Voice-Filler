@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import date, datetime
 from docx import Document
 from docx.shared import Pt
+import dateparser
 
 from src.extraction.schemas import (
     LeaveApplicationOfficeForm,
@@ -11,10 +12,42 @@ from src.extraction.schemas import (
 )
 
 
-def _format_display_date(iso_date: str) -> str:
-    """'2026-07-20' -> '20 July 2026'"""
-    d = date.fromisoformat(iso_date)
-    return d.strftime("%d %B %Y")
+def _format_display_date(value: str) -> str:
+    if not value:
+        return ""
+
+    # Already ISO
+    try:
+        d = date.fromisoformat(value)
+        return d.strftime("%d %B %Y")
+    except ValueError:
+        pass
+
+    # Parse natural language
+    parsed = dateparser.parse(
+        value,
+        settings={
+            "PREFER_DATES_FROM": "future",
+            "DATE_ORDER": "DMY",
+        },
+    )
+
+    if parsed:
+        return parsed.strftime("%d %B %Y")
+
+    # Try manual formats
+    for fmt in (
+        "%d %B %Y",
+        "%d %b %Y",
+        "%d-%m-%Y",
+        "%d/%m/%Y",
+    ):
+        try:
+            return datetime.strptime(value, fmt).strftime("%d %B %Y")
+        except ValueError:
+            pass
+
+    raise ValueError(f"Invalid date: {value}")
 
 
 def _add_line(doc: Document, text, bold: bool = False, size: int = 11):

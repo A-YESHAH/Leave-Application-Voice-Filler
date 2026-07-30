@@ -25,42 +25,57 @@ Examples:
 
 User: change my name to Ali
 Response:
-{"student_name":"Ali"}
+{{"student_name":"Ali"}}
 
 User: change the leave to sick leave
 Response:
-{"leave_type":"sick"}
+{{"leave_type":"sick"}}
 
 User: change the date to next Monday
 Response:
-{"start_date":"next Monday"}
+{{"start_date":"next Monday"}}
 
 User: change the duration to 5 days
 Response:
-{"duration_days":5}
+{{"duration_days":5}}
 
 If nothing should change, return:
-{}
+{{}}
 """
 
 
 DATE_FIELDS = {"start_date"}
 
 
-def parse_date(text: str) -> str | None:
-    parsed = dateparser.parse(
-        text,
-        settings={
-            "PREFER_DATES_FROM": "future",
-            "DATE_ORDER": "DMY",
-        },
-    )
 
-    if parsed is None:
+def parse_date(text: str) -> str | None:
+    if not text:
         return None
 
-    return parsed.date().isoformat()
+    settings = {
+        "PREFER_DATES_FROM": "future",
+        "DATE_ORDER": "DMY",
+    }
 
+    parsed = dateparser.parse(text, settings=settings)
+
+    if parsed:
+        return parsed.date().isoformat()
+
+    # Try common formats manually
+    for fmt in (
+        "%d %B %Y",
+        "%d %b %Y",
+        "%d-%m-%Y",
+        "%d/%m/%Y",
+        "%Y-%m-%d",
+    ):
+        try:
+            return datetime.strptime(text, fmt).date().isoformat()
+        except ValueError:
+            pass
+
+    return None
 
 def apply_edit_command(
     form,
@@ -112,5 +127,6 @@ def apply_edit_command(
             changed_fields.append(field)
 
     form.compute_missing()
+    print(form.model_dump())
 
     return form, changed_fields

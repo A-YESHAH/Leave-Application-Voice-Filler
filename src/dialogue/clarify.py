@@ -1,5 +1,7 @@
 from typing import Any
 import dateparser
+from datetime import datetime
+
 
 QUESTIONS: dict[str, dict[str, str]] = {
     "leave_application_office": {
@@ -55,6 +57,7 @@ DATE_FIELDS = {"start_date"}
 
 def get_next_question(form) -> tuple[str, str] | None:
     form.compute_missing()
+    print(form.model_dump())
 
     if not form.missing_fields:
         return None
@@ -70,30 +73,34 @@ def get_next_question(form) -> tuple[str, str] | None:
     return field, question
 
 
-def parse_date(raw: str) -> str | None:
-    """
-    Converts natural language dates into YYYY-MM-DD.
-
-    Examples:
-    - tomorrow
-    - next Monday
-    - 26 august 2026
-    - 26 Aug 2026
-    - 26/08/2026
-    """
-
-    parsed = dateparser.parse(
-        raw,
-        settings={
-            "PREFER_DATES_FROM": "future",
-            "DATE_ORDER": "DMY",
-        },
-    )
-
-    if parsed is None:
+def parse_date(text: str) -> str | None:
+    if not text:
         return None
 
-    return parsed.date().isoformat()
+    settings = {
+        "PREFER_DATES_FROM": "future",
+        "DATE_ORDER": "DMY",
+    }
+
+    parsed = dateparser.parse(text, settings=settings)
+
+    if parsed:
+        return parsed.date().isoformat()
+
+    # Try common formats manually
+    for fmt in (
+        "%d %B %Y",
+        "%d %b %Y",
+        "%d-%m-%Y",
+        "%d/%m/%Y",
+        "%Y-%m-%d",
+    ):
+        try:
+            return datetime.strptime(text, fmt).date().isoformat()
+        except ValueError:
+            pass
+
+    return None
 
 
 def apply_answer(form, field: str, raw_answer: str):
