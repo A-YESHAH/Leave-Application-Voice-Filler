@@ -1,39 +1,24 @@
-"""
-Parse a natural-language edit command (e.g. 'change the date to Tuesday',
-'my name is actually Ali not Ahmed') and apply it to an existing form.
-Uses a focused LLM call scoped to just the current form's fields,
-rather than re-running full extraction from scratch.
-"""
 import json
-import ollama
+import os
 from datetime import date
 
-EDIT_PROMPT = """The user has an existing form with these current values:
-{current_fields}
+from src.extraction.llm_backend import chat_json
 
-Today's date is {today}.
+DEFAULT_MODEL = os.getenv("GROQ_LLM_MODEL")
 
-The user just said: "{command}"
+EDIT_PROMPT = """..."""
 
-Determine which field(s) they want to change and to what value. Return ONLY a JSON object
-with just the field(s) that should change and their new values — do NOT include unchanged
-fields. Resolve any relative dates mentioned against today's date, output as YYYY-MM-DD.
-
-Example: if current fields include "start_date": "2026-07-20" and the user says
-"change it to next Wednesday", return: {{"start_date": "2026-07-22"}}
-
-If the command doesn't clearly map to any field in the current form, return: {{}}
-"""
-
-
-def apply_edit_command(form, command: str, model: str = "llama3.2", today: str | None = None):
-    """
-    Applies a natural-language edit command to the form. Returns the
-    updated form and a list of field names that were changed.
-    """
+def apply_edit_command(
+    form,
+    command: str,
+    model: str | None = DEFAULT_MODEL,
+    today: str | None = None,
+):
     today_str = today or date.today().isoformat()
+
     current_fields = {
-        k: v for k, v in form.model_dump().items()
+        k: v
+        for k, v in form.model_dump().items()
         if k not in ("document_type", "missing_fields") and v is not None
     }
 
@@ -43,15 +28,13 @@ def apply_edit_command(form, command: str, model: str = "llama3.2", today: str |
         command=command,
     )
 
-    response = ollama.chat(
+    raw = chat_json(
+        [{"role": "user", "content": prompt}],
         model=model,
-        messages=[{"role": "user", "content": prompt}],
-        format="json",
-        options={"temperature": 0},
     )
 
     try:
-        changes = json.loads(response["message"]["content"])
+        changes = json.loads(raw)
     except json.JSONDecodeError:
         return form, []
 
