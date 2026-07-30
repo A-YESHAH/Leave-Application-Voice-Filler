@@ -5,12 +5,13 @@ from pydantic import ValidationError
 from src.extraction.schemas import DOCUMENT_SCHEMAS
 from src.extraction.prompts import build_messages
 from src.extraction.classify import classify
+import os
 from src.extraction.normalize import (
     cross_check_duration, resolve_relative_date, validate_iso_date, format_phone_number
 )
 from src.extraction.llm_backend import chat_json
 
-MODEL_NAME = "llama3.2"
+MODEL_NAME = os.getenv("GROQ_LLM_MODEL")
 MAX_RETRIES = 2
 PHONE_FIELDS = {"contact_number", "reference_number"}
 
