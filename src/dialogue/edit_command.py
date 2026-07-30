@@ -1,68 +1,73 @@
-"""
-Parse a natural-language edit command (e.g. "change the date to Tuesday",
-"my name is actually Ali not Ahmed") and apply it to an existing form.
-
-Uses the configured LLM backend (Groq or Ollama via llm_backend.py)
-to determine which fields should be updated.
-"""
-
 import json
+import os
 from datetime import date
+import dateparser
 
 from src.extraction.llm_backend import chat_json
 
+DEFAULT_MODEL = os.getenv("GROQ_LLM_MODEL")
+
 EDIT_PROMPT = """
-You are an assistant that edits structured forms.
-
-IMPORTANT:
-- Respond ONLY with valid JSON.
-- Return ONLY a JSON object.
-- Do NOT use markdown.
-- Do NOT explain your answer.
-- If nothing should change, return {{}}.
-
-Current form values:
-
+The user has an existing form with these current values:
 {current_fields}
 
-Today's date is:
+Today's date is {today}.
 
-{today}
-
-The user said:
+The user just said:
 
 "{command}"
 
-Determine which field(s) should be updated.
+Determine which field(s) they want to change and to what value.
 
-Rules:
-- Return ONLY the fields that change.
-- Keep field names exactly the same.
-- Resolve relative dates (e.g. "next Monday") to YYYY-MM-DD.
-- Do not invent new fields.
-- If the request doesn't correspond to any field, return {{}}.
+Return ONLY a valid JSON object containing ONLY the fields that should change.
 
-Example output:
+Examples:
 
-{{
-    "start_date": "2026-08-04"
-}}
+User: change my name to Ali
+Response:
+{"student_name":"Ali"}
+
+User: change the leave to sick leave
+Response:
+{"leave_type":"sick"}
+
+User: change the date to next Monday
+Response:
+{"start_date":"next Monday"}
+
+User: change the duration to 5 days
+Response:
+{"duration_days":5}
+
+If nothing should change, return:
+{}
 """
+
+
+DATE_FIELDS = {"start_date"}
+
+
+def parse_date(text: str) -> str | None:
+    parsed = dateparser.parse(
+        text,
+        settings={
+            "PREFER_DATES_FROM": "future",
+            "DATE_ORDER": "DMY",
+        },
+    )
+
+    if parsed is None:
+        return None
+
+    return parsed.date().isoformat()
 
 
 def apply_edit_command(
     form,
     command: str,
-    model: str | None = None,
+    model: str | None = DEFAULT_MODEL,
     today: str | None = None,
 ):
-    """
-    Applies a natural-language edit command.
-
-    Returns:
-        updated_form, changed_fields
-    """
-
     today_str = today or date.today().isoformat()
 
     current_fields = {
@@ -77,26 +82,31 @@ def apply_edit_command(
         command=command,
     )
 
+    raw = chat_json(
+        [{"role": "user", "content": prompt}],
+        model=model,
+    )
+
     try:
-        raw = chat_json(
-            [{"role": "user", "content": prompt}],
-            model=model,
-        )
-
         changes = json.loads(raw)
-
     except json.JSONDecodeError:
-        print("[edit_command] Invalid JSON returned:")
-        print(raw)
-        return form, []
-
-    except Exception as e:
-        print("[edit_command]", e)
         return form, []
 
     changed_fields = []
 
     for field, value in changes.items():
+
+        if field in DATE_FIELDS and isinstance(value, str):
+            parsed = parse_date(value)
+            if parsed:
+                value = parsed
+
+        if field == "duration_days":
+            try:
+                value = int(value)
+            except Exception:
+                pass
+
         if hasattr(form, field):
             setattr(form, field, value)
             changed_fields.append(field)
