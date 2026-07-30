@@ -19,7 +19,7 @@ IMPORTANT:
 - Return ONLY a JSON object.
 - Do NOT use markdown.
 - Do NOT explain your answer.
-- If nothing should change, return {}.
+- If nothing should change, return {{}}.
 
 Current form values:
 
@@ -40,13 +40,14 @@ Rules:
 - Keep field names exactly the same.
 - Resolve relative dates (e.g. "next Monday") to YYYY-MM-DD.
 - Do not invent new fields.
-- If the request doesn't correspond to any field, return {}.
+- If the request doesn't correspond to any field, return {{}}.
 
 Example output:
 
-{
+{{
     "start_date": "2026-08-04"
-}
+}}
+"""
 """
 
 
