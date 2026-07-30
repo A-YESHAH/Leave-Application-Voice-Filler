@@ -30,29 +30,29 @@ User:
 change my name to Ali
 
 Response:
-{"student_name":"Ali"}
+{{"student_name":"Ali"}}
 
 User:
 change the leave to sick leave
 
 Response:
-{"leave_type":"sick"}
+{{"leave_type":"sick"}}
 
 User:
 change the date to next Monday
 
 Response:
-{"start_date":"next Monday"}
+{{"start_date":"next Monday"}}
 
 User:
 change the duration to 5 days
 
 Response:
-{"duration_days":5}
+{{"duration_days":5}}
 
 If nothing should change, return:
 
-{}
+{{}}
 """
 
 
