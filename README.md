@@ -80,3 +80,6 @@ See `NOTES.md` for the running development log (setup decisions, bugs found, R&D
   UI polish (progress indicators, consistent error states), and cloud-deployment support
   via environment-switchable LLM/STT backends (local Ollama+faster-whisper for dev/eval,
   Groq's free hosted APIs for deployment).
+
+  ## Architecture Diagram
+![Voice Form Filler Architecture](architecture diagram.png)
