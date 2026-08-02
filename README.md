@@ -66,6 +66,17 @@ This opens the app in your browser at `http://localhost:8501`.
 
 See `NOTES.md` for the running development log (setup decisions, bugs found, R&D findings).
 
-## Status
-
-Week 1 — core pipeline (transcribe → extract → generate) working end-to-end via Streamlit. Currently supports one document type: office leave applications.
+**Week 4** — Full pipeline complete across all four planned weeks:
+- **Week 1**: Core pipeline (transcribe → extract → generate) for office leave applications.
+- **Week 2**: Added university leave and complaint letter types with document
+  classification, a clarification loop for missing fields, rule-based date/number
+  normalization, and retry-on-invalid-output handling.
+- **Week 3**: Built and evaluated a labeled real-audio test corpus (18 clips, mixed
+  English/Urdu/code-switched). Achieved 100% document-type accuracy and 84% field
+  extraction accuracy (medium Whisper model) through iterative, evidence-driven fixes.
+  Added a confirm-vs-ask-vs-assume clarification policy for ambiguous fields (e.g.
+  leave type).
+- **Week 4**: Added PDF export, live document preview, natural-language edit commands,
+  UI polish (progress indicators, consistent error states), and cloud-deployment support
+  via environment-switchable LLM/STT backends (local Ollama+faster-whisper for dev/eval,
+  Groq's free hosted APIs for deployment).
