@@ -82,5 +82,5 @@ See `NOTES.md` for the running development log (setup decisions, bugs found, R&D
   Groq's free hosted APIs for deployment).
 
   ## Architecture Diagram
-  ![Architecture diagram](architecture diagram.png)
+  ![Architecture diagram](architecture%20diagram.png)
   
